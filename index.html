@@ -215,6 +215,37 @@ footer a { color: var(--arc-info); text-decoration: none; }
   .tab-btn { font-size: 10px; padding: 8px 6px; }
   h1 { font-size: 17px; }
 }
+
+@media (max-width: 640px) {
+  .hide-mobile { display: none !important; }
+  header { position: relative; }
+  .tab-nav { position: relative; top: auto; }
+  #graph-wrap { height: 100svh; min-height: 300px; }
+  #graph-bottom { display: block; }
+  #graph-controls-bar { display: none; }
+  #node-bar { padding: 8px 12px; gap: 2px; }
+  #nb-name { font-size: 13px; }
+  #nb-meta { font-size: 10px; }
+  #nb-neighbors { gap: 3px; margin-top: 3px; }
+  .nb-chip { font-size: 9px; padding: 2px 6px; }
+  #what-is-btn { top: 8px; right: 8px; font-size: 12px; padding: 8px 14px; }
+  footer { display: none; }
+}
+
+@media (max-width: 640px) {
+  body { background: #0d0d0d; }
+  header { background: #0d0d0d; border-bottom: 1px solid #2a2a2a; }
+  h1 { color: #ffffff; font-size: 22px; }
+  .subtitle { color: #aaaaaa; }
+  .tab-nav { background: #0d0d0d; border-bottom: 1px solid #2a2a2a; }
+  .tab-btn { color: #888888; }
+  .tab-btn.active { color: #ffffff; border-bottom-color: #ED1B2E; }
+  .tab-btn:hover { color: #cccccc; }
+  #nb-name { color: #ffffff; }
+  #nb-meta { color: #aaaaaa; }
+  .nb-chip { color: #cccccc; background: #1a1a1a; border-color: #333; }
+  #graph-bottom { background: #0d0d0d; border-top: 1px solid #2a2a2a; }
+}
 </style>
 </head>
 <body>
@@ -224,7 +255,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
   <div class="container">
     <div class="header-inner">
       <div>
-        <div class="header-brand">
+        <div class="header-brand hide-mobile">
           <svg viewBox="0 0 32 32" width="24" height="24"><rect x="12" y="4" width="8" height="24" fill="#ED1B2E"/><rect x="4" y="12" width="24" height="8" fill="#ED1B2E"/></svg>
           <span class="brand-label">Independent Research · Not an official Red Cross application</span>
         </div>
@@ -774,6 +805,19 @@ canvas.addEventListener('touchmove',e=>{
   pan.y=_t.py+(e.touches[0].clientY-_t.y);
   draw();
 },{passive:false});
+
+
+// Mobile: set graph height to remaining viewport after header+tabs
+function fixMobileGraphHeight() {
+  if (window.innerWidth > 640) return;
+  const header = document.querySelector('header');
+  const tabNav = document.querySelector('.tab-nav');
+  const used = (header ? header.offsetHeight : 0) + (tabNav ? tabNav.offsetHeight : 0);
+  const remaining = window.innerHeight - used;
+  document.getElementById('graph-wrap').style.height = remaining + 'px';
+}
+fixMobileGraphHeight();
+window.addEventListener('resize', fixMobileGraphHeight);
 
 initGraph();
 toggleStack(0, document.querySelector('.stack-header'));
