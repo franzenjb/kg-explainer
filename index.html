@@ -81,18 +81,18 @@ h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color
 /* ── GRAPH PANEL ── */
 #panel-graph { padding: 0; }
 #graph-wrap {
-  position: relative; width: 100%; height: calc(100vh - 145px);
-  min-height: 540px; background: #0d0d0d; overflow: hidden;
+  position: relative; width: 100%; height: calc(100vh - 260px);
+  min-height: 400px; background: #0d0d0d; overflow: hidden;
 }
 #graph-canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
 
 #graph-legend {
   position: absolute; top: 16px; left: 16px;
-  background: rgba(18,18,18,0.88); border: 1px solid #2a2a2a;
-  padding: 12px 14px; backdrop-filter: blur(4px);
+  background: rgba(18,18,18,0.95); border: 1px solid #444;
+  padding: 12px 14px;
 }
-.leg-title { font-family: var(--font-data); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #555; margin-bottom: 10px; }
-.leg-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 6px; font-family: var(--font-body); }
+.leg-title { font-family: var(--font-data); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #ffffff; margin-bottom: 10px; }
+.leg-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #ffffff; margin-bottom: 6px; font-family: var(--font-body); }
 .leg-row:last-child { margin-bottom: 0; }
 .leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 
@@ -337,6 +337,7 @@ footer a { color: #4a90d9; text-decoration: none; }
       <button class="tab-btn" onclick="showTab('how', this)">How It Works</button>
       <button class="tab-btn" onclick="showTab('query', this)">Query Examples</button>
       <button class="tab-btn" onclick="showTab('uses', this)">Use Cases</button>
+      <button class="tab-btn" onclick="showTab('sources', this)">Data Sources</button>
     </div>
   </div>
 </div>
@@ -353,6 +354,7 @@ footer a { color: #4a90d9; text-decoration: none; }
       <div class="leg-row"><div class="leg-dot" style="background:#F5A623"></div>County (location)</div>
       <div class="leg-row"><div class="leg-dot" style="background:#7ED321"></div>Declaration / event</div>
       <div class="leg-row"><div class="leg-dot" style="background:#9B59B6"></div>ALICE / United Way data</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#888888; opacity:0.6;"></div>Coming soon</div>
     </div>
 
     <button onclick="showTab('what', document.querySelectorAll('.tab-btn')[1])" id="what-is-btn">What Is This? →</button>
@@ -559,6 +561,104 @@ footer a { color: #4a90d9; text-decoration: none; }
   </div>
 </div>
 
+
+<!-- PANEL: SOURCES -->
+<div class="panel" id="panel-sources">
+  <div class="container">
+    <div class="red-rule"></div>
+    <h2 style="margin-bottom:20px;">The data behind the graph</h2>
+    <p style="font-size:15px;color:#cccccc;max-width:680px;line-height:1.7;margin-bottom:32px;">Every node in this knowledge graph represents a real federal, academic, or civil society dataset. Here's what each one is and why it matters for disaster response.</p>
+
+    <div class="stack">
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s0',this)">
+          <span class="stack-num" style="color:#ED1B2E;">●</span>
+          <div><div class="stack-name">FEMA National Risk Index</div><div class="stack-sub">18 natural hazard risk scores per county</div></div>
+        </div>
+        <div class="stack-body" id="sb-s0">
+          <p>FEMA's NRI scores every US county on 18 natural hazards — wildfire, hurricane, flood, tornado, earthquake, drought, and more. Each score combines expected annual loss with social vulnerability and community resilience. It's the closest thing to a single authoritative "how dangerous is this county" number. Used by FEMA for grant allocation and by Red Cross for regional planning.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s1',this)">
+          <span class="stack-num" style="color:#ED1B2E;">●</span>
+          <div><div class="stack-name">CDC Social Vulnerability Index (SVI)</div><div class="stack-sub">Which communities struggle most to recover</div></div>
+        </div>
+        <div class="stack-body" id="sb-s1">
+          <p>The CDC SVI measures a community's ability to withstand and recover from external stresses like disasters. It combines 16 Census variables across four themes: socioeconomic status, household composition, race/ethnicity/language, and housing/transportation. A high SVI score means a community has less capacity to prepare, respond, and recover — even if the physical hazard risk is the same as a wealthier neighbor.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s2',this)">
+          <span class="stack-num" style="color:#ED1B2E;">●</span>
+          <div><div class="stack-name">CDC PLACES</div><div class="stack-sub">County-level health outcomes across America</div></div>
+        </div>
+        <div class="stack-body" id="sb-s2">
+          <p>CDC PLACES provides small-area estimates of chronic disease prevalence, health behaviors, and health outcomes for every US county. This matters for disaster response because a county with high rates of asthma, diabetes, or heart disease has a population that is far more vulnerable to wildfire smoke, heat waves, and displacement. Medical needs during shelter operations can be anticipated from PLACES data before a disaster strikes.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s3',this)">
+          <span class="stack-num" style="color:#9B59B6;">●</span>
+          <div><div class="stack-name">ALICE (United Way)</div><div class="stack-sub">Asset Limited, Income Constrained, Employed</div></div>
+        </div>
+        <div class="stack-body" id="sb-s3">
+          <p>ALICE households earn above the federal poverty line but cannot afford basic necessities — housing, food, childcare, transportation, healthcare. They are the working poor, invisible to most federal vulnerability metrics. During disasters, ALICE households cannot self-evacuate, cannot absorb a week without income, and cannot recover without assistance. Yet they rarely qualify for traditional aid programs. United Way's ALICE data fills a critical gap that CDC SVI and Census poverty measures miss entirely.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s4',this)">
+          <span class="stack-num" style="color:#888;">●</span>
+          <div><div class="stack-name">NOAA Climate Projections <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Future hazard risk, not just historical</div></div>
+        </div>
+        <div class="stack-body" id="sb-s4">
+          <p>Current FEMA NRI scores are based on historical loss data. NOAA climate projections add a forward-looking layer — where wildfire risk is expanding, where flood zones are shifting, where hurricane intensity is increasing. For Red Cross pre-positioning and chapter boundary decisions, planning against tomorrow's risk profile rather than yesterday's is the difference between reactive and proactive humanitarian response.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s5',this)">
+          <span class="stack-num" style="color:#888;">●</span>
+          <div><div class="stack-name">211 Call Data (United Way) <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Real-time community need signals</div></div>
+        </div>
+        <div class="stack-body" id="sb-s5">
+          <p>211 is the national helpline for health and human services. When disasters strike, 211 call volume spikes — for food, shelter, utilities, and transportation. This data is a real-time signal of where ALICE households are in crisis. Layered against FEMA declarations and SVI scores, 211 call patterns reveal which counties are underserved by existing aid infrastructure and where Red Cross capacity gaps are most acute.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s6',this)">
+          <span class="stack-num" style="color:#888;">●</span>
+          <div><div class="stack-name">HRSA Healthcare Access <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Medical deserts in high-risk counties</div></div>
+        </div>
+        <div class="stack-body" id="sb-s6">
+          <p>HRSA designates Health Professional Shortage Areas — counties and regions with insufficient primary care, dental, or mental health providers. A county with Very High wildfire risk, poor CDC PLACES health outcomes, and an HRSA shortage designation is a triple-threat for disaster medical response. Shelter medical planning, mutual aid routing, and pre-positioned medical supplies all become more precise when healthcare access data is layered into the risk picture.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack('s7',this)">
+          <span class="stack-num" style="color:#888;">●</span>
+          <div><div class="stack-name">Wikipedia County Articles <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Narrative context for every county</div></div>
+        </div>
+        <div class="stack-body" id="sb-s7">
+          <p>Structured federal data tells you a county's risk score. It doesn't tell you that Terrebonne Parish has been fighting coastal erosion for a century, that Butte County's Camp Fire destroyed an entire town, or that Tama County is home to the Meskwaki Nation's Settlement. Wikipedia's county articles add the narrative layer — history, economy, demographics, geography, notable events — that transforms raw scores into contextual intelligence. All 3,232 county articles are being ingested now.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:32px;text-align:right;">
+      <button onclick="showTab('graph',document.querySelectorAll('.tab-btn')[0])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#ffffff;cursor:pointer;">Explore the Knowledge Graph →</button>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   <div class="container">
@@ -642,7 +742,7 @@ function resize() {
 resize();
 window.addEventListener('resize', () => { resize(); draw(); });
 
-const CMAP = { index:'#ED1B2E', hazard:'#4A90D9', county:'#F5A623', event:'#7ED321', alice:'#9B59B6' };
+const CMAP = { index:'#ED1B2E', hazard:'#4A90D9', county:'#F5A623', event:'#7ED321', alice:'#9B59B6', wiki:'#888888', trend:'#888888', future:'#888888', demand:'#888888', health:'#888888' };
 
 const NAMED_NODES = [
   { id:'fema_nri',   label:'FEMA National Risk Index',          type:'index',  r:22, fx:0.50, fy:0.42 },
@@ -676,6 +776,11 @@ const NAMED_NODES = [
   { id:'butte_ca',   label:'Butte County, CA',                   type:'county', r: 9, fx:0.48, fy:0.11 },
   { id:'terrebonne', label:'Terrebonne, LA',                     type:'county', r: 9, fx:0.80, fy:0.27 },
   { id:'plaquemines',label:'Plaquemines, LA',                    type:'county', r: 8, fx:0.87, fy:0.35 },
+  { id:'wikipedia',  label:'Wikipedia (coming soon)',                type:'wiki',   r:14, fx:0.08, fy:0.12 },
+  { id:'svi_trend',  label:'SVI Trend Data',                          type:'trend',  r:11, fx:0.18, fy:0.20 },
+  { id:'noaa',       label:'NOAA Climate Projections',                 type:'future', r:12, fx:0.88, fy:0.18 },
+  { id:'data211',    label:'211 Call Data (United Way)',               type:'demand', r:11, fx:0.10, fy:0.78 },
+  { id:'hrsa',       label:'HRSA Healthcare Access',                   type:'health', r:11, fx:0.88, fy:0.78 },
   { id:'alice',      label:'ALICE (United Way)',                     type:'alice',  r:16, fx:0.18, fy:0.65 },
 ];
 
@@ -704,6 +809,94 @@ const NAMED_EDGES = [
   ['alice','econ'],['alice','econ_lvl'],['alice','svi_pov'],['alice','cdc_svi'],
   ['alice','health_out'],['alice','resilience'],
   ['alice','tama'],['alice','terrebonne'],['alice','dallas_tx'],
+
+  // FEMA ↔ CDC cross-links (FEMA NRI incorporates SVI as input)
+  ['fema_nri','cdc_svi'],
+  ['fema_nri','health_out'],
+  ['fema_nri','census'],
+
+  // Economic hardship ↔ hazard exposure (compounding vulnerability)
+  ['econ','wildfire'],
+  ['econ','flood'],
+  ['econ','hurricane'],
+
+  // Health outcomes ↔ specific hazards (smoke, heat, storm stress)
+  ['health_out','wildfire'],
+  ['health_out','heat_wave'],
+  ['health_out','flood'],
+
+  // Disaster declarations ↔ SVI (vulnerable communities declare more often)
+  ['fema_decl','cdc_svi'],
+  ['fema_decl','fema_nri'],
+
+  // CDC PLACES ↔ SVI (health and vulnerability co-occur)
+  ['cdc_places','cdc_svi'],
+  ['cdc_places','econ'],
+
+  // Census underlies both FEMA and CDC indices
+  ['census','fema_nri'],
+  ['census','cdc_svi'],
+
+  // ALICE ↔ hazards (working poor can't evacuate or recover)
+  ['alice','wildfire'],
+  ['alice','flood'],
+  ['alice','hurricane'],
+  ['alice','heat_wave'],
+
+  // ALICE ↔ FEMA (high ALICE = more declarations, slower recovery)
+  ['alice','fema_nri'],
+  ['alice','fema_decl'],
+  ['alice','health_out'],
+
+  // Wikipedia touches everything — narrative layer over all data
+  ['wikipedia','fema_nri'],
+  ['wikipedia','cdc_svi'],
+  ['wikipedia','alice'],
+  ['wikipedia','tama'],
+  ['wikipedia','dallas_tx'],
+  ['wikipedia','butte_ca'],
+  ['wikipedia','terrebonne'],
+  ['wikipedia','fema_decl'],
+  ['wikipedia','health_out'],
+
+  // SVI Trend Data — vulnerability changing over time
+  ['svi_trend','cdc_svi'],
+  ['svi_trend','econ'],
+  ['svi_trend','alice'],
+  ['svi_trend','fema_decl'],
+  ['svi_trend','resilience'],
+  ['svi_trend','health_out'],
+  ['svi_trend','tama'],
+  ['svi_trend','terrebonne'],
+
+  // NOAA Climate Projections — future hazard risk
+  ['noaa','wildfire'],
+  ['noaa','flood'],
+  ['noaa','hurricane'],
+  ['noaa','drought'],
+  ['noaa','heat_wave'],
+  ['noaa','fema_nri'],
+  ['noaa','butte_ca'],
+  ['noaa','terrebonne'],
+
+  // 211 Call Data — real-time community need
+  ['data211','alice'],
+  ['data211','econ'],
+  ['data211','health_out'],
+  ['data211','fema_decl'],
+  ['data211','cdc_svi'],
+  ['data211','tama'],
+  ['data211','dallas_tx'],
+
+  // HRSA Healthcare Access — medical gap in high-risk counties
+  ['hrsa','health_out'],
+  ['hrsa','cdc_places'],
+  ['hrsa','wildfire'],
+  ['hrsa','hurricane'],
+  ['hrsa','fema_decl'],
+  ['hrsa','butte_ca'],
+  ['hrsa','terrebonne'],
+  ['hrsa','alice'],
 ];
 
 // Generate background noise
@@ -881,7 +1074,7 @@ toggleStack(0, document.querySelector('.stack-header'));
 draw();
 
 // ── AUTO-CYCLE DEMO ──
-const CYCLE_NODES = ['fema_nri','tama','dallas_tx','alice','cdc_svi','butte_ca','terrebonne','wildfire','flood','health_out','fema_decl'];
+const CYCLE_NODES = ['fema_nri','tama','dallas_tx','alice','wikipedia','noaa','cdc_svi','butte_ca','data211','terrebonne','wildfire','svi_trend','flood','hrsa','health_out','fema_decl'];
 let cycleIdx = 0;
 let cycleTimer = null;
 let userInteracted = false;
@@ -895,8 +1088,8 @@ function cycleNext() {
 }
 
 function startCycle() {
-  cycleTimer = setInterval(cycleNext, 5000);
-  setTimeout(cycleNext, 3000);
+  cycleTimer = setInterval(cycleNext, 6000);
+  setTimeout(cycleNext, 4000);
 }
 
 function stopCycle() {
