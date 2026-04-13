@@ -426,9 +426,6 @@ footer a { color: #4a90d9; text-decoration: none; }
       <button class="tab-btn active" onclick="showTab('graph', this)">Knowledge Graph</button>
       <button class="tab-btn" onclick="showTab('what', this)">What It Is</button>
       <button class="tab-btn" onclick="showTab('how', this)">How It Works</button>
-      <button class="tab-btn" onclick="showTab('query', this)">Query Examples</button>
-      <button class="tab-btn" onclick="showTab('uses', this)">Use Cases</button>
-      <button class="tab-btn" onclick="showTab('sources', this)">Data Sources</button>
     </div>
   </div>
 </div>
@@ -497,14 +494,9 @@ footer a { color: #4a90d9; text-decoration: none; }
       </div>
     </div>
 
-    <p style="font-size:12px;color:#888888;">
-      The Knowledge Graph tab shows the invisible infrastructure behind the app — entities extracted from 3,232 county documents, connected by relationships. This graph is what allows the app to answer complex questions, not just search for keywords. <strong style="color:#cccccc;">The app is the interface. This is the engine.</strong>
-    </p>
-    <div style="margin-top:20px;">
-      <a href="https://county.jbf.com" target="_blank" style="display:inline-block;font-family:'Source Sans Pro',sans-serif;font-size:12px;font-weight:400;padding:8px 16px;background:transparent;border:1px solid #444;color:#888;text-decoration:none;letter-spacing:0.5px;transition:border-color .2s,color .2s;">See the knowledge graph in action →</a>
-    </div>
-    <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">How It Works →</button>
+    <div style="margin-top:28px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <a href="https://county.jbf.com" target="_blank" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;color:#fff;text-decoration:none;letter-spacing:0.3px;">Try the live app →</a>
+      <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #444;color:#888;cursor:pointer;">How It Works →</button>
     </div>
   </div>
 </div>
@@ -567,185 +559,12 @@ footer a { color: #4a90d9; text-decoration: none; }
       </div>
 
     </div>
-    <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('query',document.querySelectorAll('.tab-btn')[3])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">Query Examples →</button>
+    <div style="margin-top:32px;text-align:center;">
+      <a href="https://county.jbf.com" target="_blank" style="display:inline-block;font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:700;padding:14px 32px;background:#ED1B2E;color:#fff;text-decoration:none;letter-spacing:0.5px;">Try the live app →</a>
     </div>
   </div>
 </div>
 
-<!-- PANEL: QUERY -->
-<div class="panel" id="panel-query">
-  <div class="container">
-    <div class="red-rule"></div>
-    <h2 style="margin-bottom:8px;">What you can actually ask</h2>
-    <p style="font-size:13px;color:#cccccc;margin-bottom:20px;">Select a query type to see a representative answer grounded in the county graph.</p>
-
-    <div class="query-box">
-      <div class="chips">
-        <button class="chip on" onclick="setQuery(0,this)">High risk + vulnerable counties</button>
-        <button class="chip" onclick="setQuery(1,this)">Wildfire + health outcomes</button>
-        <button class="chip" onclick="setQuery(2,this)">Repeat disaster declarations</button>
-        <button class="chip" onclick="setQuery(3,this)">Chapter resource gaps</button>
-      </div>
-      <div class="result-wrap">
-        <div class="result-tag">Query answer</div>
-        <div class="result-text" id="result-text">
-          Identifying counties where <strong>FEMA NRI composite risk score exceeds 70</strong> and <strong>CDC SVI score exceeds 0.75</strong>: the platform surfaces 147 counties meeting both thresholds. Top clusters appear in the Mississippi Delta, Appalachian coalfields, and Rio Grande Valley — areas with elevated hazard exposure and populations with limited capacity to recover. These are priority counties for pre-positioning resources and community resilience investment.
-        </div>
-        <div class="result-sources" id="result-sources">
-          <span class="src-tag">FEMA NRI</span>
-          <span class="src-tag">CDC SVI 2022</span>
-          <span class="src-tag">Census ACS 2022</span>
-        </div>
-      </div>
-    </div>
-
-    <p style="font-size:12px;color:#888888;">
-      These are illustrative examples showing what the knowledge graph makes possible. <a href="https://county.jbf.com" target="_blank" style="color:#888;text-decoration:underline;text-underline-offset:2px;">See the knowledge graph in action →</a>
-    </p>
-    <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('uses',document.querySelectorAll('.tab-btn')[4])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">Use Cases →</button>
-    </div>
-  </div>
-</div>
-
-<!-- PANEL: USES -->
-<div class="panel" id="panel-uses">
-  <div class="container">
-    <div class="red-rule"></div>
-    <h2 style="margin-bottom:20px;">What this unlocks for disaster response</h2>
-    <div class="use-grid">
-      <div class="use-card">
-        <h3>Chapter boundary decisions</h3>
-        <p>Compare reorganization scenarios by the aggregate risk and vulnerability profile of counties in each scenario. Data-driven, not politics-driven.</p>
-      </div>
-      <div class="use-card">
-        <h3>Pre-positioning resources</h3>
-        <p>Identify counties with high compound risk entering storm season. Get a ranked list with reasoning, not just a map of dots.</p>
-      </div>
-      <div class="use-card">
-        <h3>Gap analysis</h3>
-        <p>Find counties with repeated major disaster declarations but no nearby chapter capacity. Surface blind spots before a disaster hits.</p>
-      </div>
-      <div class="use-card">
-        <h3>Mutual aid planning</h3>
-        <p>When disaster strikes, find neighboring counties with similar risk profiles that may be co-impacted — and which have capacity to send aid.</p>
-      </div>
-      <div class="use-card">
-        <h3>Leadership briefings</h3>
-        <p>"Which counties in our region are most at risk this hurricane season?" — 30-second answer instead of a week of analyst work.</p>
-      </div>
-      <div class="use-card">
-        <h3>Spatial RAG (next)</h3>
-        <p>Connect this graph to ArcGIS maps. Click a county, ask a question, get an AI answer grounded in the graph — directly in the map interface.</p>
-      </div>
-    </div>
-    <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('sources',document.querySelectorAll('.tab-btn')[5])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #444;color:#888;cursor:pointer;letter-spacing:0.5px;transition:border-color .2s,color .2s;">Data Sources →</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- PANEL: SOURCES -->
-<div class="panel" id="panel-sources">
-  <div class="container">
-    <div class="red-rule"></div>
-    <h2 style="margin-bottom:16px;">Why a knowledge graph — not a database</h2>
-    <p style="font-size:15px;color:#ffffff;max-width:720px;line-height:1.7;margin-bottom:12px;">This is a knowledge graph of every US county — queryable with plain English. A database can tell you Terrebonne Parish's flood risk score. This knowledge graph can answer: <em style="color:#cccccc;">"Which counties have Very High wildfire risk, a majority of ALICE households, and no trauma center within 60 miles — and have already received a federal disaster declaration in the last five years?"</em></p>
-    <p style="font-size:14px;color:#aaaaaa;max-width:720px;line-height:1.7;margin-bottom:32px;">A knowledge graph doesn't just store data — it stores the relationships between data. That's what makes the question above answerable. This is a research prototype exploring what becomes possible when every US county's risk profile, vulnerability, and history are connected in a single queryable graph. The data types below represent the architecture — not a product claim.</p>
-
-    <div class="red-rule"></div>
-    <h2 style="margin-bottom:16px;">Structured data — the numbers</h2>
-    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Federal indices encode risk as scores, ranks, and thresholds. Each county document contains these as structured fields — precise, comparable, and directly queryable. When the graph connects FEMA NRI to CDC SVI, it's revealing that the same counties that score high on hazard risk also score high on social vulnerability — a compounding effect invisible in either dataset alone.</p>
-
-    <div class="stack">
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s0',this)">
-          <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">FEMA National Risk Index</div><div class="stack-sub">18 natural hazard risk scores per county — the authoritative federal baseline</div></div>
-        </div>
-        <div class="stack-body" id="sb-s0">
-          <p>FEMA's NRI scores every US county on 18 natural hazards — wildfire, hurricane, flood, tornado, earthquake, drought, and more. Each score combines expected annual loss with social vulnerability and community resilience. It's the primary federal answer to "how dangerous is this county?" and directly informs Red Cross regional planning and grant allocation decisions.</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s1',this)">
-          <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">CDC Social Vulnerability Index</div><div class="stack-sub">Which communities have the least capacity to recover</div></div>
-        </div>
-        <div class="stack-body" id="sb-s1">
-          <p>The CDC SVI measures a community's ability to withstand and bounce back from external stresses. It combines 16 Census variables across socioeconomic status, household composition, minority status, and housing type. High SVI + high FEMA NRI = the counties where disasters hit hardest and recovery takes longest. That intersection is where Red Cross resources matter most.</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s2',this)">
-          <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">CDC PLACES + Census ACS</div><div class="stack-sub">Health outcomes and socioeconomic conditions at the county level</div></div>
-        </div>
-        <div class="stack-body" id="sb-s2">
-          <p>CDC PLACES provides chronic disease prevalence for every county — asthma, diabetes, heart disease. A county with high wildfire risk and high asthma rates has a population acutely vulnerable to smoke. Census ACS adds income, housing age, vehicle access, and language isolation — the factors that determine whether a household can evacuate, shelter-in-place, or self-recover.</p>
-        </div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s3',this)">
-          <span class="stack-num" style="color:#9B59B6;">●</span>
-          <div><div class="stack-name">ALICE (United Way)</div><div class="stack-sub">The working poor — invisible to most federal metrics</div></div>
-        </div>
-        <div class="stack-body" id="sb-s3">
-          <p>ALICE households earn above the poverty line but cannot afford basic necessities. They don't qualify for most aid programs. They can't absorb a week without income. They can't self-evacuate without a car or savings. United Way's ALICE data fills the gap between "in poverty" and "doing fine" — revealing the hidden fragility of working households in high-risk counties. This is the dataset that changes the resource allocation argument.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="red-rule" style="margin-top:32px;"></div>
-    <h2 style="margin-bottom:16px;">Narrative data — the context</h2>
-    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Numbers tell you a county's score. Narrative tells you why it scores that way — and what it means on the ground. LightRAG's graph-enhanced retrieval is specifically designed to connect structured and narrative data, enabling queries that neither a spreadsheet nor a traditional search engine can answer.</p>
-
-    <div class="stack">
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s7',this)">
-          <span class="stack-num" style="color:#888;">●</span>
-          <div><div class="stack-name">Wikipedia County Articles <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">INGESTION IN PROGRESS</span></div><div class="stack-sub">History, economy, geography, and notable events for all 3,232 counties</div></div>
-        </div>
-        <div class="stack-body" id="sb-s7">
-          <p>A FEMA score doesn't tell you that Terrebonne Parish has lost 500 square miles of coastline since 1930, that Butte County's Camp Fire destroyed the entire town of Paradise, or that one Iowa county is home to the Meskwaki Nation's Settlement. Wikipedia county articles add the narrative layer that transforms risk scores into contextual intelligence — and demonstrate why graph-enhanced RAG outperforms pure vector search for complex humanitarian questions.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="red-rule" style="margin-top:32px;"></div>
-    <h2 style="margin-bottom:16px;">On the roadmap</h2>
-    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Each addition compounds the graph's intelligence. The goal is not more data — it's more meaningful connections between the data that already exists.</p>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;">
-      <div class="arch-box">
-        <div class="box-tag">Future risk</div>
-        <h3>NOAA Climate Projections</h3>
-        <p>Where hazard risk is expanding. Planning against tomorrow's profile, not yesterday's.</p>
-      </div>
-      <div class="arch-box">
-        <div class="box-tag">Real-time demand</div>
-        <h3>211 Call Data</h3>
-        <p>Where ALICE households are in crisis right now. Ground-truth need signals.</p>
-      </div>
-      <div class="arch-box">
-        <div class="box-tag">Medical access</div>
-        <h3>HRSA Shortage Areas</h3>
-        <p>Counties with high risk and no nearby hospital. Triple-threat disaster scenarios.</p>
-      </div>
-      <div class="arch-box">
-        <div class="box-tag">Fire incidents</div>
-        <h3>NFIRS Fire Data</h3>
-        <p>National fire incident history. Structure fires disproportionately hit ALICE households.</p>
-      </div>
-    </div>
-
-    <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('graph',document.querySelectorAll('.tab-btn')[0])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#ffffff;cursor:pointer;">Explore the Knowledge Graph →</button>
-    </div>
-  </div>
-</div>
 
 <!-- FOOTER -->
 <footer>
