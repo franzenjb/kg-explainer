@@ -293,11 +293,77 @@ footer a { color: #4a90d9; text-decoration: none; }
   .nb-chip { color: #ffffff; background: #1a1a1a; border-color: #333; }
   #graph-hint-inline { color: #333; }
 }
+
+/* ── INTRO MODAL ── */
+#intro-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: fadeIn .4s ease;
+}
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+#intro-modal.hidden { display: none; }
+#intro-box {
+  max-width: 640px; width: 100%;
+  border: 1px solid #2a2a2a;
+  background: #111;
+  padding: 48px;
+}
+#intro-box .intro-eyebrow {
+  font-family: var(--font-data); font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: #ED1B2E; margin-bottom: 24px;
+}
+#intro-box .intro-headline {
+  font-family: var(--font-headline); font-size: 26px;
+  font-weight: 700; color: #ffffff; line-height: 1.35;
+  margin-bottom: 20px;
+}
+#intro-box .intro-headline em {
+  font-style: italic; color: #aaaaaa;
+}
+#intro-box .intro-sub {
+  font-size: 14px; color: #aaaaaa; line-height: 1.7;
+  margin-bottom: 36px; border-top: 1px solid #2a2a2a;
+  padding-top: 20px;
+}
+#intro-enter {
+  font-family: var(--font-body); font-size: 14px; font-weight: 700;
+  padding: 14px 32px; background: #ED1B2E; border: none;
+  color: #ffffff; cursor: pointer; width: 100%;
+  letter-spacing: 0.5px;
+}
+#intro-enter:hover { background: #c8121f; }
+@media (max-width: 640px) {
+  #intro-box { padding: 28px 20px; }
+  #intro-box .intro-headline { font-size: 20px; }
+}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
+
+<div id="intro-modal">
+  <div id="intro-box">
+    <div class="intro-eyebrow">County Intelligence Platform</div>
+    <div class="intro-headline">
+      A database can tell you Terrebonne Parish's flood risk score.<br>
+      <em>This can answer something harder.</em>
+    </div>
+    <p class="intro-sub">
+      <em>"Which counties have Very High wildfire risk, a majority of ALICE households, and no trauma center within 60 miles — and have already received a federal disaster declaration in the last five years?"</em>
+    </p>
+    <p class="intro-sub" style="margin-top:12px;">
+      A knowledge graph doesn't just store data — it stores the <em>relationships</em> between data. That's what makes that question answerable. This is a research prototype connecting every US county's risk profile, vulnerability measures, and history in a single queryable graph.
+    </p>
+    <button id="intro-enter" onclick="document.getElementById('intro-modal').classList.add('hidden')">
+      Explore the Knowledge Graph →
+    </button>
+  </div>
+</div>
+
 <header>
   <div class="container">
     <div class="header-inner">
@@ -425,7 +491,7 @@ footer a { color: #4a90d9; text-decoration: none; }
           <div><div class="stack-name">Graph Construction</div><div class="stack-sub">Entities and relationships extracted and indexed</div></div>
         </div>
         <div class="stack-body" id="sb-1">
-          <p>LightRAG reads each document and extracts named entities (county names, hazard types, index names) and the relationships between them. These become nodes and edges in a graph database. When you see <code>Tama → Wildfire</code> in the graph, that's a stored relationship with associated risk data. "Degree 19" means Tama County has 19 direct connections — one for each hazard type and risk index it's linked to.</p>
+          <p>LightRAG reads each document and extracts named entities (county names, hazard types, index names) and the relationships between them. These become nodes and edges in a graph database. When you see <code>Terrebonne → Hurricane</code> in the graph, that's a stored relationship with associated risk data. "Degree 19" means a county has 19 direct connections — one for each hazard type and risk index it's linked to.</p>
         </div>
       </div>
 
@@ -435,7 +501,7 @@ footer a { color: #4a90d9; text-decoration: none; }
           <div><div class="stack-name">Hybrid Retrieval</div><div class="stack-sub">Graph traversal + vector similarity search combined</div></div>
         </div>
         <div class="stack-body" id="sb-2">
-          <p>When you ask a question, LightRAG runs two searches simultaneously: (1) traverses the graph to find relevant entities and their neighbors, and (2) runs vector similarity search over the raw document chunks. Combining both results is what allows it to answer specific factual questions ("what is Tama County's wildfire risk?") and complex comparative questions ("which Iowa counties have high flood risk and low health scores?").</p>
+          <p>When you ask a question, LightRAG runs two searches simultaneously: (1) traverses the graph to find relevant entities and their neighbors, and (2) runs vector similarity search over the raw document chunks. Combining both results is what allows it to answer specific factual questions ("what is Terrebonne Parish's hurricane risk?") and complex comparative questions ("which Louisiana parishes have both high flood risk and low healthcare access?").</p>
         </div>
       </div>
 
@@ -544,91 +610,94 @@ footer a { color: #4a90d9; text-decoration: none; }
 <div class="panel" id="panel-sources">
   <div class="container">
     <div class="red-rule"></div>
-    <h2 style="margin-bottom:20px;">The data behind the graph</h2>
-    <p style="font-size:15px;color:#cccccc;max-width:680px;line-height:1.7;margin-bottom:32px;">Every node in this knowledge graph represents a real federal, academic, or civil society dataset. Here's what each one is and why it matters for disaster response.</p>
+    <h2 style="margin-bottom:16px;">Why a knowledge graph — not a database</h2>
+    <p style="font-size:15px;color:#ffffff;max-width:720px;line-height:1.7;margin-bottom:12px;">This is a knowledge graph of every US county — queryable with plain English. A database can tell you Terrebonne Parish's flood risk score. This knowledge graph can answer: <em style="color:#cccccc;">"Which counties have Very High wildfire risk, a majority of ALICE households, and no trauma center within 60 miles — and have already received a federal disaster declaration in the last five years?"</em></p>
+    <p style="font-size:14px;color:#aaaaaa;max-width:720px;line-height:1.7;margin-bottom:32px;">A knowledge graph doesn't just store data — it stores the relationships between data. That's what makes the question above answerable. This is a research prototype exploring what becomes possible when every US county's risk profile, vulnerability, and history are connected in a single queryable graph. The data types below represent the architecture — not a product claim.</p>
+
+    <div class="red-rule"></div>
+    <h2 style="margin-bottom:16px;">Structured data — the numbers</h2>
+    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Federal indices encode risk as scores, ranks, and thresholds. Each county document contains these as structured fields — precise, comparable, and directly queryable. When the graph connects FEMA NRI to CDC SVI, it's revealing that the same counties that score high on hazard risk also score high on social vulnerability — a compounding effect invisible in either dataset alone.</p>
 
     <div class="stack">
-
       <div class="stack-item">
         <div class="stack-header" onclick="toggleStack('s0',this)">
           <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">FEMA National Risk Index</div><div class="stack-sub">18 natural hazard risk scores per county</div></div>
+          <div><div class="stack-name">FEMA National Risk Index</div><div class="stack-sub">18 natural hazard risk scores per county — the authoritative federal baseline</div></div>
         </div>
         <div class="stack-body" id="sb-s0">
-          <p>FEMA's NRI scores every US county on 18 natural hazards — wildfire, hurricane, flood, tornado, earthquake, drought, and more. Each score combines expected annual loss with social vulnerability and community resilience. It's the closest thing to a single authoritative "how dangerous is this county" number. Used by FEMA for grant allocation and by Red Cross for regional planning.</p>
+          <p>FEMA's NRI scores every US county on 18 natural hazards — wildfire, hurricane, flood, tornado, earthquake, drought, and more. Each score combines expected annual loss with social vulnerability and community resilience. It's the primary federal answer to "how dangerous is this county?" and directly informs Red Cross regional planning and grant allocation decisions.</p>
         </div>
       </div>
-
       <div class="stack-item">
         <div class="stack-header" onclick="toggleStack('s1',this)">
           <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">CDC Social Vulnerability Index (SVI)</div><div class="stack-sub">Which communities struggle most to recover</div></div>
+          <div><div class="stack-name">CDC Social Vulnerability Index</div><div class="stack-sub">Which communities have the least capacity to recover</div></div>
         </div>
         <div class="stack-body" id="sb-s1">
-          <p>The CDC SVI measures a community's ability to withstand and recover from external stresses like disasters. It combines 16 Census variables across four themes: socioeconomic status, household composition, race/ethnicity/language, and housing/transportation. A high SVI score means a community has less capacity to prepare, respond, and recover — even if the physical hazard risk is the same as a wealthier neighbor.</p>
+          <p>The CDC SVI measures a community's ability to withstand and bounce back from external stresses. It combines 16 Census variables across socioeconomic status, household composition, minority status, and housing type. High SVI + high FEMA NRI = the counties where disasters hit hardest and recovery takes longest. That intersection is where Red Cross resources matter most.</p>
         </div>
       </div>
-
       <div class="stack-item">
         <div class="stack-header" onclick="toggleStack('s2',this)">
           <span class="stack-num" style="color:#ED1B2E;">●</span>
-          <div><div class="stack-name">CDC PLACES</div><div class="stack-sub">County-level health outcomes across America</div></div>
+          <div><div class="stack-name">CDC PLACES + Census ACS</div><div class="stack-sub">Health outcomes and socioeconomic conditions at the county level</div></div>
         </div>
         <div class="stack-body" id="sb-s2">
-          <p>CDC PLACES provides small-area estimates of chronic disease prevalence, health behaviors, and health outcomes for every US county. This matters for disaster response because a county with high rates of asthma, diabetes, or heart disease has a population that is far more vulnerable to wildfire smoke, heat waves, and displacement. Medical needs during shelter operations can be anticipated from PLACES data before a disaster strikes.</p>
+          <p>CDC PLACES provides chronic disease prevalence for every county — asthma, diabetes, heart disease. A county with high wildfire risk and high asthma rates has a population acutely vulnerable to smoke. Census ACS adds income, housing age, vehicle access, and language isolation — the factors that determine whether a household can evacuate, shelter-in-place, or self-recover.</p>
         </div>
       </div>
-
       <div class="stack-item">
         <div class="stack-header" onclick="toggleStack('s3',this)">
           <span class="stack-num" style="color:#9B59B6;">●</span>
-          <div><div class="stack-name">ALICE (United Way)</div><div class="stack-sub">Asset Limited, Income Constrained, Employed</div></div>
+          <div><div class="stack-name">ALICE (United Way)</div><div class="stack-sub">The working poor — invisible to most federal metrics</div></div>
         </div>
         <div class="stack-body" id="sb-s3">
-          <p>ALICE households earn above the federal poverty line but cannot afford basic necessities — housing, food, childcare, transportation, healthcare. They are the working poor, invisible to most federal vulnerability metrics. During disasters, ALICE households cannot self-evacuate, cannot absorb a week without income, and cannot recover without assistance. Yet they rarely qualify for traditional aid programs. United Way's ALICE data fills a critical gap that CDC SVI and Census poverty measures miss entirely.</p>
+          <p>ALICE households earn above the poverty line but cannot afford basic necessities. They don't qualify for most aid programs. They can't absorb a week without income. They can't self-evacuate without a car or savings. United Way's ALICE data fills the gap between "in poverty" and "doing fine" — revealing the hidden fragility of working households in high-risk counties. This is the dataset that changes the resource allocation argument.</p>
         </div>
       </div>
+    </div>
 
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s4',this)">
-          <span class="stack-num" style="color:#888;">●</span>
-          <div><div class="stack-name">NOAA Climate Projections <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Future hazard risk, not just historical</div></div>
-        </div>
-        <div class="stack-body" id="sb-s4">
-          <p>Current FEMA NRI scores are based on historical loss data. NOAA climate projections add a forward-looking layer — where wildfire risk is expanding, where flood zones are shifting, where hurricane intensity is increasing. For Red Cross pre-positioning and chapter boundary decisions, planning against tomorrow's risk profile rather than yesterday's is the difference between reactive and proactive humanitarian response.</p>
-        </div>
-      </div>
+    <div class="red-rule" style="margin-top:32px;"></div>
+    <h2 style="margin-bottom:16px;">Narrative data — the context</h2>
+    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Numbers tell you a county's score. Narrative tells you why it scores that way — and what it means on the ground. LightRAG's graph-enhanced retrieval is specifically designed to connect structured and narrative data, enabling queries that neither a spreadsheet nor a traditional search engine can answer.</p>
 
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s5',this)">
-          <span class="stack-num" style="color:#888;">●</span>
-          <div><div class="stack-name">211 Call Data (United Way) <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Real-time community need signals</div></div>
-        </div>
-        <div class="stack-body" id="sb-s5">
-          <p>211 is the national helpline for health and human services. When disasters strike, 211 call volume spikes — for food, shelter, utilities, and transportation. This data is a real-time signal of where ALICE households are in crisis. Layered against FEMA declarations and SVI scores, 211 call patterns reveal which counties are underserved by existing aid infrastructure and where Red Cross capacity gaps are most acute.</p>
-        </div>
-      </div>
-
-      <div class="stack-item">
-        <div class="stack-header" onclick="toggleStack('s6',this)">
-          <span class="stack-num" style="color:#888;">●</span>
-          <div><div class="stack-name">HRSA Healthcare Access <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Medical deserts in high-risk counties</div></div>
-        </div>
-        <div class="stack-body" id="sb-s6">
-          <p>HRSA designates Health Professional Shortage Areas — counties and regions with insufficient primary care, dental, or mental health providers. A county with Very High wildfire risk, poor CDC PLACES health outcomes, and an HRSA shortage designation is a triple-threat for disaster medical response. Shelter medical planning, mutual aid routing, and pre-positioned medical supplies all become more precise when healthcare access data is layered into the risk picture.</p>
-        </div>
-      </div>
-
+    <div class="stack">
       <div class="stack-item">
         <div class="stack-header" onclick="toggleStack('s7',this)">
           <span class="stack-num" style="color:#888;">●</span>
-          <div><div class="stack-name">Wikipedia County Articles <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">COMING SOON</span></div><div class="stack-sub">Narrative context for every county</div></div>
+          <div><div class="stack-name">Wikipedia County Articles <span style="font-size:10px;color:#ED1B2E;font-family:var(--font-data);margin-left:8px;">INGESTION IN PROGRESS</span></div><div class="stack-sub">History, economy, geography, and notable events for all 3,232 counties</div></div>
         </div>
         <div class="stack-body" id="sb-s7">
-          <p>Structured federal data tells you a county's risk score. It doesn't tell you that Terrebonne Parish has been fighting coastal erosion for a century, that Butte County's Camp Fire destroyed an entire town, or that Tama County is home to the Meskwaki Nation's Settlement. Wikipedia's county articles add the narrative layer — history, economy, demographics, geography, notable events — that transforms raw scores into contextual intelligence. All 3,232 county articles are being ingested now.</p>
+          <p>A FEMA score doesn't tell you that Terrebonne Parish has lost 500 square miles of coastline since 1930, that Butte County's Camp Fire destroyed the entire town of Paradise, or that one Iowa county is home to the Meskwaki Nation's Settlement. Wikipedia county articles add the narrative layer that transforms risk scores into contextual intelligence — and demonstrate why graph-enhanced RAG outperforms pure vector search for complex humanitarian questions.</p>
         </div>
       </div>
+    </div>
 
+    <div class="red-rule" style="margin-top:32px;"></div>
+    <h2 style="margin-bottom:16px;">On the roadmap</h2>
+    <p style="font-size:13px;color:#aaaaaa;max-width:720px;line-height:1.6;margin-bottom:20px;">Each addition compounds the graph's intelligence. The goal is not more data — it's more meaningful connections between the data that already exists.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;">
+      <div class="arch-box">
+        <div class="box-tag">Future risk</div>
+        <h3>NOAA Climate Projections</h3>
+        <p>Where hazard risk is expanding. Planning against tomorrow's profile, not yesterday's.</p>
+      </div>
+      <div class="arch-box">
+        <div class="box-tag">Real-time demand</div>
+        <h3>211 Call Data</h3>
+        <p>Where ALICE households are in crisis right now. Ground-truth need signals.</p>
+      </div>
+      <div class="arch-box">
+        <div class="box-tag">Medical access</div>
+        <h3>HRSA Shortage Areas</h3>
+        <p>Counties with high risk and no nearby hospital. Triple-threat disaster scenarios.</p>
+      </div>
+      <div class="arch-box">
+        <div class="box-tag">Fire incidents</div>
+        <h3>NFIRS Fire Data</h3>
+        <p>National fire incident history. Structure fires disproportionately hit ALICE households.</p>
+      </div>
     </div>
 
     <div style="margin-top:32px;text-align:right;">
