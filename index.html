@@ -239,6 +239,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
       <div class="leg-row"><div class="leg-dot" style="background:#4A90D9"></div>Hazard type</div>
       <div class="leg-row"><div class="leg-dot" style="background:#F5A623"></div>County (location)</div>
       <div class="leg-row"><div class="leg-dot" style="background:#7ED321"></div>Declaration / event</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#9B59B6"></div>ALICE / United Way data</div>
     </div>
 
     <div id="node-panel">
@@ -259,6 +260,10 @@ footer a { color: var(--arc-info); text-decoration: none; }
     </div>
 
     <div id="graph-hint">Click node to explore · Scroll to zoom · Drag to pan</div>
+
+    <button onclick="showTab('what', document.querySelectorAll('.tab-btn')[1])" style="position:absolute;top:16px;right:16px;font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:700;padding:10px 20px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;letter-spacing:0.5px;white-space:nowrap;z-index:10;">
+      What Is This? →
+    </button>
   </div>
 </div>
 
@@ -303,8 +308,11 @@ footer a { color: var(--arc-info); text-decoration: none; }
     </div>
 
     <p style="font-size:12px;color:var(--arc-gray-500);">
-      The Knowledge Graph tab above is a live visualization of the graph structure. Each node is an entity. Each edge is a relationship. Click any node to explore its connections.
+      The Knowledge Graph tab is a live visualization of the graph structure. Each node is an entity. Each edge is a relationship. Click any node to explore its connections.
     </p>
+    <div style="margin-top:32px;text-align:right;">
+      <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">How It Works →</button>
+    </div>
   </div>
 </div>
 
@@ -366,6 +374,9 @@ footer a { color: var(--arc-info); text-decoration: none; }
       </div>
 
     </div>
+    <div style="margin-top:32px;text-align:right;">
+      <button onclick="showTab('query',document.querySelectorAll('.tab-btn')[3])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">Query Examples →</button>
+    </div>
   </div>
 </div>
 
@@ -399,6 +410,9 @@ footer a { color: var(--arc-info); text-decoration: none; }
     <p style="font-size:12px;color:var(--arc-gray-500);">
       In the live platform at <strong>explorer.jbf.com</strong>, type these questions directly into the Retrieval tab. The API tab accepts programmatic queries from any application.
     </p>
+    <div style="margin-top:32px;text-align:right;">
+      <button onclick="showTab('uses',document.querySelectorAll('.tab-btn')[4])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">Use Cases →</button>
+    </div>
   </div>
 </div>
 
@@ -438,6 +452,9 @@ footer a { color: var(--arc-info); text-decoration: none; }
         <h3>Spatial RAG (next)</h3>
         <p>Connect this graph to ArcGIS maps. Click a county, ask a question, get an AI answer grounded in the graph — directly in the map interface.</p>
       </div>
+    </div>
+    <div style="margin-top:32px;text-align:right;">
+      <button onclick="showTab('graph',document.querySelectorAll('.tab-btn')[0])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;">Explore the Knowledge Graph →</button>
     </div>
   </div>
 </div>
@@ -507,7 +524,7 @@ function resize() {
 resize();
 window.addEventListener('resize', () => { resize(); draw(); });
 
-const CMAP = { index:'#ED1B2E', hazard:'#4A90D9', county:'#F5A623', event:'#7ED321' };
+const CMAP = { index:'#ED1B2E', hazard:'#4A90D9', county:'#F5A623', event:'#7ED321', alice:'#9B59B6' };
 
 const NAMED_NODES = [
   { id:'fema_nri',   label:'FEMA National Risk Index',          type:'index',  r:22, fx:0.50, fy:0.42 },
@@ -541,6 +558,7 @@ const NAMED_NODES = [
   { id:'butte_ca',   label:'Butte County, CA',                   type:'county', r: 9, fx:0.48, fy:0.11 },
   { id:'terrebonne', label:'Terrebonne, LA',                     type:'county', r: 9, fx:0.80, fy:0.27 },
   { id:'plaquemines',label:'Plaquemines, LA',                    type:'county', r: 8, fx:0.87, fy:0.35 },
+  { id:'alice',      label:'ALICE (United Way)',                     type:'alice',  r:16, fx:0.18, fy:0.65 },
 ];
 
 const NAMED_EDGES = [
@@ -565,6 +583,9 @@ const NAMED_EDGES = [
   ['butte_ca','wildfire'],['butte_ca','health_out'],['butte_ca','fema_decl'],
   ['terrebonne','hurricane'],['terrebonne','flood'],['terrebonne','fema_decl'],
   ['plaquemines','hurricane'],['plaquemines','flood'],
+  ['alice','econ'],['alice','econ_lvl'],['alice','svi_pov'],['alice','cdc_svi'],
+  ['alice','health_out'],['alice','resilience'],
+  ['alice','tama'],['alice','terrebonne'],['alice','dallas_tx'],
 ];
 
 // Generate background noise
@@ -729,6 +750,52 @@ canvas.addEventListener('touchmove',e=>{
 initGraph();
 toggleStack(0, document.querySelector('.stack-header'));
 draw();
+
+// ── AUTO-CYCLE DEMO ──
+const CYCLE_NODES = ['fema_nri','tama','dallas_tx','alice','cdc_svi','butte_ca','terrebonne','wildfire','flood','health_out','fema_decl'];
+let cycleIdx = 0;
+let cycleTimer = null;
+let userInteracted = false;
+
+function cycleNext() {
+  if (userInteracted) return;
+  const id = CYCLE_NODES[cycleIdx % CYCLE_NODES.length];
+  const idx = nodes.findIndex(n => n.id === id);
+  if (idx >= 0) showNodePanel(idx);
+  cycleIdx++;
+}
+
+function startCycle() {
+  cycleTimer = setInterval(cycleNext, 3000);
+  setTimeout(cycleNext, 800); // first one quickly
+}
+
+function stopCycle() {
+  userInteracted = true;
+  if (cycleTimer) { clearInterval(cycleTimer); cycleTimer = null; }
+}
+
+// Pause on any user interaction with the graph
+canvas.addEventListener('mousedown', stopCycle, { once: false });
+canvas.addEventListener('touchstart', stopCycle, { once: false });
+canvas.addEventListener('wheel', stopCycle, { once: false });
+
+// Start cycle when graph tab is shown
+const _origShowTab = showTab;
+function showTab(name, btn) {
+  _origShowTab(name, btn);
+  if (name === 'graph') {
+    userInteracted = false;
+    cycleIdx = 0;
+    startCycle();
+  } else {
+    stopCycle();
+  }
+}
+
+// Start on load since graph is default tab
+startCycle();
+
 </script>
 </body>
 </html>
