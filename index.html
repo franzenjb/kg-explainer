@@ -377,10 +377,9 @@ footer a { color: #4a90d9; text-decoration: none; }
   <div id="intro-box">
     <div class="intro-eyebrow">County Intelligence Platform</div>
     <div class="intro-headline">
-      A database can tell you Terrebonne Parish's flood risk score.<br>
-      <em style="color:#ED1B2E;">A <strong style="color:#ED1B2E;">knowledge graph</strong> can tell you why that score alone isn't enough.</em>
+      Every US county. Every hazard. Every risk.<br>
+      <em>Queryable with plain English.</em>
     </div>
-
     <div id="intro-graph-wrap">
       <canvas id="intro-graph-canvas"></canvas>
       <div id="intro-graph-fade-top"></div>
@@ -389,8 +388,25 @@ footer a { color: #4a90d9; text-decoration: none; }
       <div id="intro-graph-fade-right"></div>
     </div>
     <button id="intro-enter" onclick="document.getElementById('intro-modal').classList.add('hidden')">
-      Explore the Knowledge Graph →
+      Show me what's behind it →
     </button>
+  </div>
+</div>
+
+<!-- WHAT IS THIS MODAL — triggered by graph button -->
+<div id="what-is-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:24px;">
+  <div style="max-width:600px;width:100%;background:#111;border:1px solid #2a2a2a;border-left:3px solid #ED1B2E;padding:40px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#ED1B2E;margin-bottom:20px;">County Intelligence Platform</div>
+    <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.35;margin-bottom:20px;">
+      What you're looking at is the engine,<br>not the interface.
+    </div>
+    <div style="font-size:14px;color:#aaaaaa;line-height:1.75;margin-bottom:24px;border-top:1px solid #2a2a2a;padding-top:20px;">
+      Each node in this graph is an entity extracted from one of 3,232 US county risk profiles — a county name, a hazard type, a federal risk index, a health outcome. Each edge is a relationship: Terrebonne Parish connects to Hurricane, which connects to Very High Risk, which connects to 21 federal disaster declarations since 1968.<br><br>
+      A flat database can tell you Terrebonne's flood score. This graph knows <em style="color:#cccccc;">why that number matters</em> — who lives there, what they face, and how many times FEMA has had to respond.<br><br>
+      The interface itself is deceptively simple. You type a question in plain English. The graph finds the answer. Which counties have the highest coastal flood risk combined with the lowest capacity to recover? Which communities look most like New Orleans did before Katrina? Ask it anything.
+    </div>
+    <a href="https://county-intel-v2.vercel.app" target="_blank" style="display:block;font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:12px 20px;background:#ED1B2E;color:#fff;text-decoration:none;text-align:center;letter-spacing:0.5px;margin-bottom:12px;">See the App This Powers →</a>
+    <button onclick="document.getElementById('what-is-modal').style.display='none'" style="width:100%;font-family:'Source Sans Pro',sans-serif;font-size:12px;padding:10px;background:transparent;border:1px solid #333;color:#666;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">Close — Show me the engine</button>
   </div>
 </div>
 
@@ -431,7 +447,8 @@ footer a { color: #4a90d9; text-decoration: none; }
 <!-- PANEL: GRAPH -->
 <div class="panel active" id="panel-graph">
   <div id="graph-wrap">
-    <canvas id="graph-canvas"></canvas><button onclick="showTab('what', document.querySelectorAll('.tab-btn')[1])" id="what-is-btn">What Is This? →</button>
+    <canvas id="graph-canvas"></canvas><button onclick="document.getElementById('what-is-modal').style.display='flex'" id="what-is-btn">What Is This? →</button>
+    <div style="position:absolute;top:16px;left:16px;z-index:10;font-family:'Source Sans Pro',sans-serif;font-size:12px;color:#aaaaaa;background:rgba(14,14,14,0.88);border:1px solid #2a2a2a;padding:9px 14px;backdrop-filter:blur(4px);max-width:280px;line-height:1.5;">This is what powers the app — the invisible intelligence layer behind every query.</div>
     <div id="graph-bottom">
       <div id="graph-controls-bar">
         <div class="gctrl on" onclick="setFilter('all',this)">All</div>
@@ -490,8 +507,11 @@ footer a { color: #4a90d9; text-decoration: none; }
     </div>
 
     <p style="font-size:12px;color:#888888;">
-      The Knowledge Graph tab is a live visualization of the graph structure. Each node is an entity. Each edge is a relationship. Click any node to explore its connections.
+      The Knowledge Graph tab shows the invisible infrastructure behind the app — entities extracted from 3,232 county documents, connected by relationships. This graph is what allows the app to answer complex questions, not just search for keywords. <strong style="color:#cccccc;">The app is the interface. This is the engine.</strong>
     </p>
+    <div style="margin-top:20px;">
+      <a href="https://county-intel-v2.vercel.app" target="_blank" style="display:inline-block;font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;text-decoration:none;letter-spacing:0.3px;">See the App This Powers →</a>
+    </div>
     <div style="margin-top:32px;text-align:right;">
       <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">How It Works →</button>
     </div>
@@ -590,8 +610,11 @@ footer a { color: #4a90d9; text-decoration: none; }
     </div>
 
     <p style="font-size:12px;color:#888888;">
-      These are illustrative examples, not live query results. Try it yourself at <strong style="color:#cccccc;">explorer.jbf.com</strong> — Retrieval tab.
+      These are illustrative examples showing what the knowledge graph makes possible. The app uses this same engine to answer questions about any US county in real time.
     </p>
+    <div style="margin-top:20px;">
+      <a href="https://county-intel-v2.vercel.app" target="_blank" style="display:block;font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:600;padding:14px 24px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;text-decoration:none;text-align:center;letter-spacing:0.5px;">See the App This Powers →</a>
+    </div>
     <div style="margin-top:32px;text-align:right;">
       <button onclick="showTab('uses',document.querySelectorAll('.tab-btn')[4])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">Use Cases →</button>
     </div>
