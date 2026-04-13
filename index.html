@@ -387,26 +387,25 @@ footer a { color: #4a90d9; text-decoration: none; }
       <div id="intro-graph-fade-left"></div>
       <div id="intro-graph-fade-right"></div>
     </div>
-    <button id="intro-enter" onclick="document.getElementById('intro-modal').classList.add('hidden')">
+    <button id="intro-enter" onclick="document.getElementById('intro-modal').classList.add('hidden');document.getElementById('what-is-modal').style.display='flex';">
       Show me what's behind it →
     </button>
   </div>
 </div>
 
-<!-- WHAT IS THIS MODAL — triggered by graph button -->
+<!-- WHAT IS THIS MODAL — fires when intro modal is dismissed -->
 <div id="what-is-modal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:24px;">
-  <div style="max-width:600px;width:100%;background:#111;border:1px solid #2a2a2a;border-left:3px solid #ED1B2E;padding:40px;">
+  <div style="max-width:600px;width:100%;background:#111;border:1px solid #2a2a2a;padding:40px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#ED1B2E;margin-bottom:20px;">County Intelligence Platform</div>
     <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:22px;font-weight:700;color:#ffffff;line-height:1.35;margin-bottom:20px;">
-      What you're looking at is the engine,<br>not the interface.
+      This is not the application.<br>This is what powers it.
     </div>
-    <div style="font-size:14px;color:#aaaaaa;line-height:1.75;margin-bottom:24px;border-top:1px solid #2a2a2a;padding-top:20px;">
-      Each node in this graph is an entity extracted from one of 3,232 US county risk profiles — a county name, a hazard type, a federal risk index, a health outcome. Each edge is a relationship: Terrebonne Parish connects to Hurricane, which connects to Very High Risk, which connects to 21 federal disaster declarations since 1968.<br><br>
-      A flat database can tell you Terrebonne's flood score. This graph knows <em style="color:#cccccc;">why that number matters</em> — who lives there, what they face, and how many times FEMA has had to respond.<br><br>
-      The interface itself is deceptively simple. You type a question in plain English. The graph finds the answer. Which counties have the highest coastal flood risk combined with the lowest capacity to recover? Which communities look most like New Orleans did before Katrina? Ask it anything.
+    <div style="font-size:14px;color:#aaaaaa;line-height:1.75;margin-bottom:28px;border-top:1px solid #2a2a2a;padding-top:20px;">
+      What you're looking at is a live knowledge graph — 3,232 US county risk profiles encoded as entities and relationships. Each node is a county, a hazard type, a federal risk index, or a health outcome. Each edge is a relationship between them.<br><br>
+      The application itself is far simpler: you type a question in plain English, and the graph finds the answer. Which counties face the highest coastal flood risk combined with the lowest capacity to recover? Which communities look most like New Orleans did before Katrina? The graph knows. You just ask.
     </div>
-    <a href="https://county-intel-v2.vercel.app" target="_blank" style="display:block;font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:12px 20px;background:#ED1B2E;color:#fff;text-decoration:none;text-align:center;letter-spacing:0.5px;margin-bottom:12px;">See the App This Powers →</a>
-    <button onclick="document.getElementById('what-is-modal').style.display='none'" style="width:100%;font-family:'Source Sans Pro',sans-serif;font-size:12px;padding:10px;background:transparent;border:1px solid #333;color:#666;cursor:pointer;letter-spacing:1px;text-transform:uppercase;">Close — Show me the engine</button>
+    <a href="https://county-intel-v2.vercel.app" target="_blank" style="display:block;font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:700;padding:14px 20px;background:#ED1B2E;color:#fff;text-decoration:none;text-align:center;letter-spacing:0.5px;margin-bottom:12px;">See the app this powers →</a>
+    <button onclick="document.getElementById('what-is-modal').style.display='none'" style="width:100%;font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:400;padding:12px;background:transparent;border:1px solid #444;color:#888;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:border-color .2s,color .2s;">Explore the graph →</button>
   </div>
 </div>
 
@@ -447,8 +446,7 @@ footer a { color: #4a90d9; text-decoration: none; }
 <!-- PANEL: GRAPH -->
 <div class="panel active" id="panel-graph">
   <div id="graph-wrap">
-    <canvas id="graph-canvas"></canvas><button onclick="document.getElementById('what-is-modal').style.display='flex'" id="what-is-btn">What Is This? →</button>
-    <div style="position:absolute;top:16px;left:16px;z-index:10;font-family:'Source Sans Pro',sans-serif;font-size:12px;color:#aaaaaa;background:rgba(14,14,14,0.88);border:1px solid #2a2a2a;padding:9px 14px;backdrop-filter:blur(4px);max-width:280px;line-height:1.5;">This is what powers the app — the invisible intelligence layer behind every query.</div>
+    <canvas id="graph-canvas"></canvas>
     <div id="graph-bottom">
       <div id="graph-controls-bar">
         <div class="gctrl on" onclick="setFilter('all',this)">All</div>
