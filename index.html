@@ -437,7 +437,9 @@ footer a { color: #4a90d9; text-decoration: none; }
 <div class="panel active" id="panel-graph">
   <div id="graph-wrap">
     <canvas id="graph-canvas"></canvas>
-    <button id="graph-mobile-cta" onclick="showTab('what',document.querySelectorAll('.tab-btn')[1])" style="display:none;position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:700;padding:14px 32px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;z-index:10;white-space:nowrap;letter-spacing:0.5px;">What Is This? →</button>
+    <div id="graph-mobile-cta" style="display:none;position:absolute;bottom:24px;left:0;right:0;text-align:center;z-index:10;">
+      <button onclick="showTab('what',document.querySelectorAll('.tab-btn')[1])" style="font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:700;padding:14px 32px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;white-space:nowrap;letter-spacing:0.5px;">What Is This? →</button>
+    </div>
     <div id="graph-bottom">
       <div id="graph-controls-bar">
         <div class="gctrl on" onclick="setFilter('all',this)">All</div>
