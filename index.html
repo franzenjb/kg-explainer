@@ -335,9 +335,38 @@ footer a { color: #4a90d9; text-decoration: none; }
   letter-spacing: 0.5px;
 }
 #intro-enter:hover { background: #c8121f; }
+#intro-graph-wrap {
+  position: relative; width: 100%; height: 200px;
+  margin: 28px 0 28px;
+  overflow: hidden;
+}
+#intro-graph-canvas {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+#intro-graph-fade-top {
+  position: absolute; top: 0; left: 0; right: 0; height: 60px;
+  background: linear-gradient(to bottom, #111 0%, transparent 100%);
+  pointer-events: none; z-index: 2;
+}
+#intro-graph-fade-bottom {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+  background: linear-gradient(to top, #111 0%, transparent 100%);
+  pointer-events: none; z-index: 2;
+}
+#intro-graph-fade-left {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 60px;
+  background: linear-gradient(to right, #111 0%, transparent 100%);
+  pointer-events: none; z-index: 2;
+}
+#intro-graph-fade-right {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 60px;
+  background: linear-gradient(to left, #111 0%, transparent 100%);
+  pointer-events: none; z-index: 2;
+}
 @media (max-width: 640px) {
   #intro-box { padding: 28px 20px; }
   #intro-box .intro-headline { font-size: 20px; }
+  #intro-graph-wrap { height: 150px; }
 }
 </style>
 </head>
@@ -350,14 +379,16 @@ footer a { color: #4a90d9; text-decoration: none; }
     <div class="intro-eyebrow">County Intelligence Platform</div>
     <div class="intro-headline">
       A database can tell you Terrebonne Parish's flood risk score.<br>
-      <em>This can answer something harder.</em>
+      <em style="color:#ED1B2E;">A <strong style="color:#ED1B2E;">knowledge graph</strong> can tell you why that score alone isn't enough.</em>
     </div>
-    <p class="intro-sub">
-      <em>"Which counties have Very High wildfire risk, a majority of ALICE households, and no trauma center within 60 miles — and have already received a federal disaster declaration in the last five years?"</em>
-    </p>
-    <p class="intro-sub" style="margin-top:12px;">
-      A knowledge graph doesn't just store data — it stores the <em>relationships</em> between data. That's what makes that question answerable. This is a research prototype connecting every US county's risk profile, vulnerability measures, and history in a single queryable graph.
-    </p>
+
+    <div id="intro-graph-wrap">
+      <canvas id="intro-graph-canvas"></canvas>
+      <div id="intro-graph-fade-top"></div>
+      <div id="intro-graph-fade-bottom"></div>
+      <div id="intro-graph-fade-left"></div>
+      <div id="intro-graph-fade-right"></div>
+    </div>
     <button id="intro-enter" onclick="document.getElementById('intro-modal').classList.add('hidden')">
       Explore the Knowledge Graph →
     </button>
@@ -1151,6 +1182,135 @@ canvas.addEventListener('wheel', stopCycle);
 
 // Start on load since graph is default tab
 startCycle();
+
+// ── INTRO MODAL GRAPH ──
+(function() {
+  const ic = document.getElementById('intro-graph-canvas');
+  if (!ic) return;
+  const ictx = ic.getContext('2d');
+
+  const NODE_COLORS = [
+    '#ED1B2E','#ED1B2E','#ED1B2E',  // county — weighted red
+    '#1e6fa8','#2a8a6e','#7a5ea8',  // hazard types
+    '#c47a1e','#4a8a2e','#6e3a8a',  // indices
+    '#555577','#446655','#664444',  // misc
+  ];
+
+  const NODE_COUNT = 90;
+  const EDGE_COUNT = 160;
+
+  let IW, IH;
+  let inodes = [], iedges = [];
+
+  function resize() {
+    IW = ic.parentElement.clientWidth;
+    IH = ic.parentElement.clientHeight;
+    ic.width = IW;
+    ic.height = IH;
+  }
+
+  function initIntroGraph() {
+    resize();
+    inodes = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+      inodes.push({
+        x: Math.random() * IW,
+        y: Math.random() * IH,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        r: Math.random() < 0.15 ? 5 + Math.random() * 4 : 2 + Math.random() * 2.5,
+        color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.012 + Math.random() * 0.018,
+      });
+    }
+    iedges = [];
+    // Hub nodes — highly connected
+    const hubs = [0, 1, 2, 3, 4, 5];
+    for (let h of hubs) {
+      const degree = 8 + Math.floor(Math.random() * 10);
+      for (let d = 0; d < degree; d++) {
+        const t = Math.floor(Math.random() * NODE_COUNT);
+        if (t !== h) iedges.push({ a: h, b: t });
+      }
+    }
+    // Random edges for density
+    while (iedges.length < EDGE_COUNT) {
+      const a = Math.floor(Math.random() * NODE_COUNT);
+      const b = Math.floor(Math.random() * NODE_COUNT);
+      if (a !== b) iedges.push({ a, b });
+    }
+  }
+
+  function drawIntro(ts) {
+    ictx.clearRect(0, 0, IW, IH);
+    ictx.fillStyle = '#111';
+    ictx.fillRect(0, 0, IW, IH);
+
+    // Update positions
+    for (const n of inodes) {
+      n.x += n.vx;
+      n.y += n.vy;
+      n.pulse += n.pulseSpeed;
+      // Wrap edges
+      if (n.x < -20) n.x = IW + 20;
+      if (n.x > IW + 20) n.x = -20;
+      if (n.y < -20) n.y = IH + 20;
+      if (n.y > IH + 20) n.y = -20;
+    }
+
+    // Edges
+    for (const e of iedges) {
+      const a = inodes[e.a], b = inodes[e.b];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const alpha = Math.max(0, 0.12 - dist / 3000);
+      if (alpha < 0.005) continue;
+      ictx.beginPath();
+      ictx.moveTo(a.x, a.y);
+      ictx.lineTo(b.x, b.y);
+      ictx.strokeStyle = `rgba(255,255,255,${alpha})`;
+      ictx.lineWidth = 0.5;
+      ictx.stroke();
+    }
+
+    // Nodes
+    for (const n of inodes) {
+      const glow = 0.7 + 0.3 * Math.sin(n.pulse);
+      // Outer glow ring on larger nodes
+      if (n.r > 4) {
+        ictx.beginPath();
+        ictx.arc(n.x, n.y, n.r * 2.2, 0, Math.PI * 2);
+        ictx.fillStyle = n.color.replace(')', `,${0.08 * glow})`).replace('rgb', 'rgba').replace('#', 'rgba(').replace('rgba(ED1B2E', 'rgba(237,27,46');
+        // simpler approach:
+        ictx.globalAlpha = 0.08 * glow;
+        ictx.fillStyle = n.color;
+        ictx.fill();
+        ictx.globalAlpha = 1;
+      }
+      ictx.beginPath();
+      ictx.arc(n.x, n.y, n.r * glow, 0, Math.PI * 2);
+      ictx.globalAlpha = 0.75 + 0.25 * glow;
+      ictx.fillStyle = n.color;
+      ictx.fill();
+      ictx.globalAlpha = 1;
+    }
+
+    requestAnimationFrame(drawIntro);
+  }
+
+  initIntroGraph();
+  requestAnimationFrame(drawIntro);
+
+  window.addEventListener('resize', () => {
+    resize();
+    // reposition nodes proportionally
+    for (const n of inodes) {
+      n.x = Math.random() * IW;
+      n.y = Math.random() * IH;
+    }
+  });
+})();
 
 </script>
 
