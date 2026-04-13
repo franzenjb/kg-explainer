@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>County Intelligence Platform — Knowledge Graph Explorer</title>
+<meta name="description" content="How LightRAG + AI turns 3,232 county documents into an answerable knowledge graph for disaster response.">
+<meta property="og:title" content="County Intelligence Platform">
+<meta property="og:description" content="Every US county. Every hazard. Every risk index. Queryable with plain English.">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --arc-red: #ED1B2E;
+  --arc-black: #1a1a1a;
+  --arc-cream: #f7f5f2;
+  --arc-gray-900: #2d2d2d;
+  --arc-gray-700: #4a4a4a;
+  --arc-gray-500: #737373;
+  --arc-gray-300: #a3a3a3;
+  --arc-gray-100: #e5e5e5;
+  --arc-white: #fff;
+  --arc-info: #1e4a6d;
+  --arc-success: #2d5a27;
+  --arc-caution: #b8860b;
+  --font-headline: 'Libre Baskerville', Georgia, serif;
+  --font-body: 'Source Sans Pro', 'Helvetica Neue', sans-serif;
+  --font-data: 'IBM Plex Mono', Consolas, monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--arc-cream); color: var(--arc-gray-900); line-height: 1.5; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--arc-cream); }
+::-webkit-scrollbar-thumb { background: var(--arc-gray-300); border-radius: 3px; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+.red-rule { width: 40px; height: 3px; background: var(--arc-red); margin-bottom: 12px; }
+
+/* ── HEADER ── */
+header {
+  background: var(--arc-white);
+  border-bottom: 3px solid var(--arc-black);
+  padding: 28px 0 20px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.header-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.brand-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--arc-red); }
+h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color: var(--arc-black); line-height: 1.2; }
+.subtitle { font-size: 15px; color: var(--arc-gray-500); font-weight: 300; margin-top: 4px; }
+.header-stats { display: flex; gap: 28px; align-items: flex-end; flex-shrink: 0; }
+.hstat { text-align: right; }
+.hstat-val { font-family: var(--font-data); font-size: 22px; font-weight: 500; color: var(--arc-black); }
+.hstat-val.red { color: var(--arc-red); }
+.hstat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--arc-gray-500); }
+
+/* ── NAV TABS ── */
+.tab-nav {
+  background: var(--arc-white);
+  border-bottom: 1px solid var(--arc-gray-100);
+  position: sticky; top: 97px; z-index: 99;
+}
+.tab-nav-inner { display: flex; gap: 0; overflow-x: auto; }
+.tab-btn {
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  padding: 12px 22px; background: none; border: none;
+  border-bottom: 3px solid transparent; cursor: pointer;
+  color: var(--arc-gray-500); white-space: nowrap;
+  transition: color .15s, border-color .15s;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--arc-gray-900); }
+.tab-btn.active { color: var(--arc-black); border-bottom-color: var(--arc-black); }
+
+/* ── PANELS ── */
+.panel { display: none; padding: 36px 0 48px; }
+.panel.active { display: block; }
+
+/* ── GRAPH PANEL ── */
+#panel-graph { padding: 0; }
+#graph-wrap {
+  position: relative; width: 100%; height: calc(100vh - 145px);
+  min-height: 480px; background: #0d0d0d; overflow: hidden;
+}
+#graph-canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
+
+#graph-legend {
+  position: absolute; top: 16px; left: 16px;
+  background: rgba(18,18,18,0.88); border: 1px solid #2a2a2a;
+  padding: 12px 14px; backdrop-filter: blur(4px);
+}
+.leg-title { font-family: var(--font-data); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #555; margin-bottom: 10px; }
+.leg-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #666; margin-bottom: 6px; font-family: var(--font-body); }
+.leg-row:last-child { margin-bottom: 0; }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+#node-panel {
+  position: absolute; top: 16px; right: 16px; width: 210px;
+  background: rgba(18,18,18,0.92); border: 1px solid #2a2a2a;
+  padding: 16px; display: none; backdrop-filter: blur(4px);
+}
+#node-panel .np-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--arc-red); margin-bottom: 8px; }
+#node-panel .np-name { font-family: var(--font-headline); font-size: 15px; color: #fff; margin-bottom: 3px; line-height: 1.3; }
+#node-panel .np-type { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+#node-panel .np-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #1e1e1e; padding: 5px 0; }
+#node-panel .np-row span:first-child { color: #555; }
+#node-panel .np-row span:last-child { color: #ccc; font-family: var(--font-data); }
+#node-panel .np-nb-label { font-size: 10px; color: #444; margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.nb-chip { display: inline-block; font-size: 10px; padding: 2px 6px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #888; margin: 2px; font-family: var(--font-data); }
+
+#graph-controls {
+  position: absolute; bottom: 16px; left: 16px;
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.gctrl {
+  font-family: var(--font-data); font-size: 10px; letter-spacing: 0.5px;
+  padding: 5px 12px; border: 1px solid #2a2a2a;
+  background: rgba(18,18,18,0.85); color: #777; cursor: pointer;
+  transition: all .15s;
+}
+.gctrl:hover, .gctrl.on { border-color: var(--arc-red); color: var(--arc-red); }
+
+#graph-hint { position: absolute; bottom: 16px; right: 16px; font-size: 10px; color: #333; font-family: var(--font-data); }
+
+/* ── WHAT / HOW / QUERY / USES ── */
+h2 { font-family: var(--font-headline); font-size: 21px; font-weight: 700; color: var(--arc-black); margin-bottom: 10px; }
+h3 { font-family: var(--font-headline); font-size: 15px; font-weight: 700; color: var(--arc-black); }
+
+.arch { display: grid; gap: 12px; margin: 24px 0; }
+.arch-row { display: flex; gap: 12px; }
+.arch-box { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 16px 20px; flex: 1; }
+.arch-box.highlight { border-left: 3px solid var(--arc-red); }
+.arch-box.dark { background: var(--arc-black); color: var(--arc-white); }
+.arch-box.dark h3 { color: var(--arc-white); }
+.arch-box.dark p { color: var(--arc-gray-500); }
+.box-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--arc-gray-300); margin-bottom: 6px; }
+.arch-box.dark .box-tag { color: #444; }
+.arch-box p { font-size: 13px; color: var(--arc-gray-700); margin-top: 4px; line-height: 1.5; }
+.arrow-down { text-align: center; font-size: 16px; color: var(--arc-gray-300); }
+
+.stack { margin: 24px 0; }
+.stack-item { border: 1px solid var(--arc-gray-100); background: var(--arc-white); }
+.stack-item + .stack-item { border-top: none; }
+.stack-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 20px; cursor: pointer; transition: background .15s;
+}
+.stack-header:hover { background: #fafaf9; }
+.stack-header.open { border-left: 3px solid var(--arc-red); padding-left: 17px; }
+.stack-num { font-family: var(--font-data); font-size: 13px; color: var(--arc-red); min-width: 22px; }
+.stack-name { font-weight: 600; font-size: 14px; }
+.stack-sub { font-size: 12px; color: var(--arc-gray-500); margin-top: 2px; }
+.stack-body { display: none; padding: 14px 20px 18px 58px; background: var(--arc-cream); border-top: 1px solid var(--arc-gray-100); }
+.stack-body.open { display: block; }
+.stack-body p { font-size: 13px; color: var(--arc-gray-700); line-height: 1.65; }
+.stack-body code { font-family: var(--font-data); font-size: 11px; background: var(--arc-white); padding: 2px 6px; border: 1px solid var(--arc-gray-100); }
+
+.query-box { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 22px; margin: 24px 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.chip {
+  font-family: var(--font-body); font-size: 12px; padding: 6px 14px;
+  border: 1px solid var(--arc-gray-300); background: none; cursor: pointer;
+  border-radius: 20px; color: var(--arc-gray-700); transition: all .15s;
+}
+.chip:hover { border-color: var(--arc-black); color: var(--arc-black); }
+.chip.on { background: var(--arc-black); color: var(--arc-white); border-color: var(--arc-black); }
+.result-wrap { border-top: 1px solid var(--arc-gray-100); padding-top: 18px; min-height: 130px; }
+.result-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--arc-gray-500); margin-bottom: 10px; }
+.result-text { font-size: 14px; color: var(--arc-gray-900); line-height: 1.7; }
+.result-text strong { color: var(--arc-red); font-weight: 600; }
+.result-sources { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+.src-tag { font-family: var(--font-data); font-size: 10px; padding: 3px 8px; background: var(--arc-cream); border: 1px solid var(--arc-gray-100); color: var(--arc-gray-500); }
+
+.use-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
+.use-card { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 18px; }
+.use-card:hover { border-color: var(--arc-gray-300); }
+.use-icon { font-size: 18px; margin-bottom: 8px; }
+.use-card h3 { font-size: 14px; margin-bottom: 5px; }
+.use-card p { font-size: 12px; color: var(--arc-gray-700); line-height: 1.5; }
+
+/* ── FOOTER ── */
+footer { background: var(--arc-white); border-top: 3px solid var(--arc-black); padding: 20px 0; }
+footer p { font-size: 11px; color: var(--arc-gray-500); }
+footer a { color: var(--arc-info); text-decoration: none; }
+
+@media (max-width: 640px) {
+  h1 { font-size: 22px; }
+  .header-stats { display: none; }
+  .use-grid { grid-template-columns: 1fr; }
+  .arch-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div>
+        <div class="header-brand">
+          <svg viewBox="0 0 32 32" width="24" height="24"><rect x="12" y="4" width="8" height="24" fill="#ED1B2E"/><rect x="4" y="12" width="24" height="8" fill="#ED1B2E"/></svg>
+          <span class="brand-label">Independent Research · Not an official Red Cross application</span>
+        </div>
+        <h1>County Intelligence Platform</h1>
+        <div class="subtitle">3,232 county documents. Every hazard. Every risk index. Queryable with plain English.</div>
+      </div>
+      <div class="header-stats">
+        <div class="hstat"><div class="hstat-val red">3,232</div><div class="hstat-label">County docs</div></div>
+        <div class="hstat"><div class="hstat-val">18</div><div class="hstat-label">Hazard types</div></div>
+        <div class="hstat"><div class="hstat-val">5</div><div class="hstat-label">Risk indices</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<div class="tab-nav">
+  <div class="container">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" onclick="showTab('graph', this)">Knowledge Graph</button>
+      <button class="tab-btn" onclick="showTab('what', this)">What It Is</button>
+      <button class="tab-btn" onclick="showTab('how', this)">How It Works</button>
+      <button class="tab-btn" onclick="showTab('query', this)">Query Examples</button>
+      <button class="tab-btn" onclick="showTab('uses', this)">Use Cases</button>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: GRAPH -->
+<div class="panel active" id="panel-graph">
+  <div id="graph-wrap">
+    <canvas id="graph-canvas"></canvas>
+
+    <div id="graph-legend">
+      <div class="leg-title">Node type</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#ED1B2E"></div>Risk index / dataset</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#4A90D9"></div>Hazard type</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#F5A623"></div>County (location)</div>
+      <div class="leg-row"><div class="leg-dot" style="background:#7ED321"></div>Declaration / event</div>
+    </div>
+
+    <div id="node-panel">
+      <div class="np-tag">Node</div>
+      <div class="np-name" id="np-name">—</div>
+      <div class="np-type" id="np-type">—</div>
+      <div class="np-row"><span>Connections</span><span id="np-degree">—</span></div>
+      <div class="np-row"><span>Category</span><span id="np-cat">—</span></div>
+      <div class="np-nb-label">Connected to</div>
+      <div id="np-neighbors"></div>
+    </div>
+
+    <div id="graph-controls">
+      <div class="gctrl on" onclick="setFilter('all',this)">All nodes</div>
+      <div class="gctrl" onclick="setFilter('county',this)">Counties</div>
+      <div class="gctrl" onclick="setFilter('hazard',this)">Hazards</div>
+      <div class="gctrl" onclick="setFilter('index',this)">Risk indices</div>
+    </div>
+
+    <div id="graph-hint">Click node to explore · Scroll to zoom · Drag to pan</div>
+  </div>
+</div>
+
+<!-- PANEL: WHAT -->
+<div class="panel" id="panel-what">
+  <div class="container">
+    <div class="red-rule"></div>
+    <h2>A knowledge graph of every US county — queryable with plain English</h2>
+    <p style="font-size:15px;color:var(--arc-gray-700);max-width:680px;line-height:1.7;margin:12px 0 28px;">
+      Every US county has been encoded into a graph database connecting hazard risks, social vulnerability, economic hardship, health outcomes, and disaster declaration history. Instead of searching spreadsheets, you ask a question and get a synthesized answer grounded in that data.
+    </p>
+
+    <div class="arch">
+      <div class="arch-row">
+        <div class="arch-box">
+          <div class="box-tag">Layer 1 — Raw data</div>
+          <h3>Source Documents</h3>
+          <p>FEMA NRI, CDC SVI, CDC PLACES, Census ACS, FEMA Disaster Declarations — one structured document per county</p>
+        </div>
+        <div class="arch-box">
+          <div class="box-tag">Layer 1 — Raw data</div>
+          <h3>Hazard Coverage</h3>
+          <p>18 hazard types per county: wildfire, hurricane, flood, tornado, earthquake, drought, hail, ice storm, strong wind, and more</p>
+        </div>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div class="arch-row">
+        <div class="arch-box highlight">
+          <div class="box-tag">Layer 2 — Intelligence engine</div>
+          <h3>LightRAG on Railway</h3>
+          <p>Extracts entities and relationships. Builds the graph: county → hazard → risk index → health indicator → declaration history. Running live at explorer.jbf.com</p>
+        </div>
+      </div>
+      <div class="arrow-down">↓</div>
+      <div class="arch-row">
+        <div class="arch-box dark">
+          <div class="box-tag">Layer 3 — Query interface</div>
+          <h3>AI Query Layer</h3>
+          <p>Plain English question → graph traversal + vector search → synthesized answer with citations. Any app can call the API.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--arc-gray-500);">
+      The Knowledge Graph tab above is a live visualization of the graph structure. Each node is an entity. Each edge is a relationship. Click any node to explore its connections.
+    </p>
+  </div>
+</div>
+
+<!-- PANEL: HOW -->
+<div class="panel" id="panel-how">
+  <div class="container">
+    <div class="red-rule"></div>
+    <h2 style="margin-bottom:20px;">The technology stack, layer by layer</h2>
+    <div class="stack">
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack(0,this)">
+          <span class="stack-num">01</span>
+          <div><div class="stack-name">Document Ingestion</div><div class="stack-sub">3,232 county profiles loaded into LightRAG</div></div>
+        </div>
+        <div class="stack-body" id="sb-0">
+          <p>Each county document contains structured data from five federal sources: FEMA National Risk Index (risk scores for 18 hazard types), CDC Social Vulnerability Index, CDC PLACES health outcomes, Census ACS socioeconomic indicators, and FEMA Major Disaster Declaration history. LightRAG ingests these as text and extracts entities and relationships automatically using an LLM.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack(1,this)">
+          <span class="stack-num">02</span>
+          <div><div class="stack-name">Graph Construction</div><div class="stack-sub">Entities and relationships extracted and indexed</div></div>
+        </div>
+        <div class="stack-body" id="sb-1">
+          <p>LightRAG reads each document and extracts named entities (county names, hazard types, index names) and the relationships between them. These become nodes and edges in a graph database. When you see <code>Tama → Wildfire</code> in the graph, that's a stored relationship with associated risk data. "Degree 19" means Tama County has 19 direct connections — one for each hazard type and risk index it's linked to.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack(2,this)">
+          <span class="stack-num">03</span>
+          <div><div class="stack-name">Hybrid Retrieval</div><div class="stack-sub">Graph traversal + vector similarity search combined</div></div>
+        </div>
+        <div class="stack-body" id="sb-2">
+          <p>When you ask a question, LightRAG runs two searches simultaneously: (1) traverses the graph to find relevant entities and their neighbors, and (2) runs vector similarity search over the raw document chunks. Combining both results is what allows it to answer specific factual questions ("what is Tama County's wildfire risk?") and complex comparative questions ("which Iowa counties have high flood risk and low health scores?").</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack(3,this)">
+          <span class="stack-num">04</span>
+          <div><div class="stack-name">AI Synthesis</div><div class="stack-sub">Claude generates grounded answers from retrieved context</div></div>
+        </div>
+        <div class="stack-body" id="sb-3">
+          <p>The retrieved graph context is passed to Claude with your question. The model synthesizes a natural language answer from the graph data — not from general training knowledge. This is Retrieval Augmented Generation (RAG): the AI is grounded in your specific dataset. Answers include citations back to source counties and federal datasets.</p>
+        </div>
+      </div>
+
+      <div class="stack-item">
+        <div class="stack-header" onclick="toggleStack(4,this)">
+          <span class="stack-num">05</span>
+          <div><div class="stack-name">API + Spatial RAG</div><div class="stack-sub">Any app can query the graph — including ArcGIS maps</div></div>
+        </div>
+        <div class="stack-body" id="sb-4">
+          <p>LightRAG exposes a REST API. Any application can send a natural language question and receive a structured answer. The next evolution is Spatial RAG: connecting this graph to ArcGIS maps so a disaster planner can click a county on a map and ask "what's this county's compounded risk profile?" — answered in seconds by the knowledge graph, displayed directly in the map interface.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PANEL: QUERY -->
+<div class="panel" id="panel-query">
+  <div class="container">
+    <div class="red-rule"></div>
+    <h2 style="margin-bottom:8px;">What you can actually ask</h2>
+    <p style="font-size:13px;color:var(--arc-gray-700);margin-bottom:20px;">Select a query type to see a representative answer grounded in the county graph.</p>
+
+    <div class="query-box">
+      <div class="chips">
+        <button class="chip on" onclick="setQuery(0,this)">High risk + vulnerable counties</button>
+        <button class="chip" onclick="setQuery(1,this)">Wildfire + health outcomes</button>
+        <button class="chip" onclick="setQuery(2,this)">Repeat disaster declarations</button>
+        <button class="chip" onclick="setQuery(3,this)">Chapter resource gaps</button>
+      </div>
+      <div class="result-wrap">
+        <div class="result-tag">Query answer</div>
+        <div class="result-text" id="result-text">
+          Identifying counties where <strong>FEMA NRI composite risk score exceeds 70</strong> and <strong>CDC SVI score exceeds 0.75</strong>: the platform surfaces 147 counties meeting both thresholds. Top clusters appear in the Mississippi Delta, Appalachian coalfields, and Rio Grande Valley — areas with elevated hazard exposure and populations with limited capacity to recover. These are priority counties for pre-positioning resources and community resilience investment.
+        </div>
+        <div class="result-sources" id="result-sources">
+          <span class="src-tag">FEMA NRI</span>
+          <span class="src-tag">CDC SVI 2022</span>
+          <span class="src-tag">Census ACS 2022</span>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--arc-gray-500);">
+      In the live platform at <strong>explorer.jbf.com</strong>, type these questions directly into the Retrieval tab. The API tab accepts programmatic queries from any application.
+    </p>
+  </div>
+</div>
+
+<!-- PANEL: USES -->
+<div class="panel" id="panel-uses">
+  <div class="container">
+    <div class="red-rule"></div>
+    <h2 style="margin-bottom:20px;">What this unlocks for disaster response</h2>
+    <div class="use-grid">
+      <div class="use-card">
+        <div class="use-icon">🗺️</div>
+        <h3>Chapter boundary decisions</h3>
+        <p>Compare reorganization scenarios by the aggregate risk and vulnerability profile of counties in each scenario. Data-driven, not politics-driven.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">📦</div>
+        <h3>Pre-positioning resources</h3>
+        <p>Identify counties with high compound risk entering storm season. Get a ranked list with reasoning, not just a map of dots.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🔍</div>
+        <h3>Gap analysis</h3>
+        <p>Find counties with repeated major disaster declarations but no nearby chapter capacity. Surface blind spots before a disaster hits.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🤝</div>
+        <h3>Mutual aid planning</h3>
+        <p>When disaster strikes, find neighboring counties with similar risk profiles that may be co-impacted — and which have capacity to send aid.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">📊</div>
+        <h3>Leadership briefings</h3>
+        <p>"Which counties in our region are most at risk this hurricane season?" — 30-second answer instead of a week of analyst work.</p>
+      </div>
+      <div class="use-card">
+        <div class="use-icon">🔗</div>
+        <h3>Spatial RAG (next)</h3>
+        <p>Connect this graph to ArcGIS maps. Click a county, ask a question, get an AI answer grounded in the graph — directly in the map interface.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>Independent research · Not an official American Red Cross application · Built by Jeff Franzen · <a href="https://explorer.jbf.com" target="_blank">explorer.jbf.com</a> · LightRAG on Railway · pgvector · <a href="https://jbf.com" target="_blank">jbf.com</a></p>
+  </div>
+</footer>
+
+<script>
+// ── TAB SWITCHING ──
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'graph') { resize(); draw(); }
+}
+
+// ── STACK ACCORDION ──
+function toggleStack(i, header) {
+  const body = document.getElementById('sb-' + i);
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.stack-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.stack-header').forEach(h => h.classList.remove('open'));
+  if (!isOpen) { body.classList.add('open'); header.classList.add('open'); }
+}
+
+// ── QUERY DEMO ──
+const QUERIES = [
+  {
+    text: `Identifying counties where <strong>FEMA NRI composite risk score exceeds 70</strong> and <strong>CDC SVI score exceeds 0.75</strong>: the platform surfaces 147 counties meeting both thresholds. Top clusters appear in the Mississippi Delta, Appalachian coalfields, and Rio Grande Valley — areas with elevated hazard exposure and populations with limited capacity to recover. These are priority counties for pre-positioning resources and community resilience investment.`,
+    sources: ['FEMA NRI', 'CDC SVI 2022', 'Census ACS 2022']
+  },
+  {
+    text: `Counties in the western US with <strong>Very High or Relatively High wildfire risk</strong> show elevated rates of respiratory conditions (asthma, COPD) in the CDC PLACES dataset — consistent with chronic smoke exposure. Butte County CA, Lake County CA, and Trinity County CA rank highest on compound wildfire + respiratory burden. Red Cross shelter planning in these areas should account for air quality support needs.`,
+    sources: ['FEMA NRI', 'CDC PLACES 2023', 'CDC SVI 2022']
+  },
+  {
+    text: `<strong>73 counties have received 5 or more FEMA Major Disaster Declarations</strong>, suggesting chronic disaster exposure rather than single-event vulnerability. Louisiana coastal parishes lead (Terrebonne, Plaquemines, St. Mary), followed by counties along the Mississippi River flood corridor. These repeat-declaration counties warrant permanent chapter capacity — not just surge response.`,
+    sources: ['FEMA Disaster Declarations', 'FEMA NRI', 'ACS/SVI Poverty Indicators']
+  },
+  {
+    text: `Cross-referencing <strong>high-risk counties</strong> (FEMA NRI composite &gt; 65) against chapter coverage reveals significant gaps in rural Appalachia, the central Great Plains, and the Four Corners region. High hazard risk, elevated economic hardship, and the nearest chapter capacity is 90+ minutes away — exceeding standard response thresholds. Prime candidates for volunteer chapter development or mutual aid agreements.`,
+    sources: ['FEMA NRI', 'Economic Hardship Level', 'CDC SVI 2022', 'Census ACS 2022']
+  }
+];
+
+function setQuery(i, btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('result-text').innerHTML = QUERIES[i].text;
+  document.getElementById('result-sources').innerHTML = QUERIES[i].sources.map(s => `<span class="src-tag">${s}</span>`).join('');
+}
+
+// ── KNOWLEDGE GRAPH ──
+const canvas = document.getElementById('graph-canvas');
+const ctx = canvas.getContext('2d');
+const wrap = document.getElementById('graph-wrap');
+
+function resize() {
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); draw(); });
+
+const CMAP = { index:'#ED1B2E', hazard:'#4A90D9', county:'#F5A623', event:'#7ED321' };
+
+const NAMED_NODES = [
+  { id:'fema_nri',   label:'FEMA National Risk Index',          type:'index',  r:22, fx:0.50, fy:0.42 },
+  { id:'cdc_svi',    label:'CDC SVI 2022',                      type:'index',  r:18, fx:0.27, fy:0.57 },
+  { id:'cdc_places', label:'CDC PLACES 2023',                   type:'index',  r:15, fx:0.38, fy:0.67 },
+  { id:'econ',       label:'Economic Hardship',                  type:'index',  r:17, fx:0.21, fy:0.43 },
+  { id:'econ_lvl',   label:'Economic Hardship Level',            type:'index',  r:13, fx:0.33, fy:0.40 },
+  { id:'nh_risk',    label:'Natural Hazard Risk',                type:'index',  r:12, fx:0.27, fy:0.47 },
+  { id:'svi_pov',    label:'ACS/SVI Poverty Indicators',         type:'index',  r:12, fx:0.43, fy:0.61 },
+  { id:'resilience', label:'Community Resilience',               type:'index',  r:12, fx:0.32, fy:0.33 },
+  { id:'svi_idx',    label:'Social Vulnerability Index (SVI)',    type:'index',  r:13, fx:0.40, fy:0.28 },
+  { id:'health_out', label:'Health Outcomes (CDC PLACES 2023)',   type:'index',  r:16, fx:0.54, fy:0.19 },
+  { id:'census',     label:'Census ACS 2022',                    type:'index',  r:13, fx:0.41, fy:0.51 },
+  { id:'fema_decl',  label:'FEMA Major Disaster Declarations',   type:'event',  r:14, fx:0.43, fy:0.70 },
+  { id:'wildfire',   label:'Wildfire',                           type:'hazard', r:11, fx:0.62, fy:0.57 },
+  { id:'hurricane',  label:'Hurricane',                          type:'hazard', r:11, fx:0.59, fy:0.51 },
+  { id:'flood',      label:'Riverine Flooding',                  type:'hazard', r:12, fx:0.63, fy:0.64 },
+  { id:'drought',    label:'Drought',                            type:'hazard', r:10, fx:0.68, fy:0.51 },
+  { id:'tornado',    label:'Tornado',                            type:'hazard', r:10, fx:0.72, fy:0.43 },
+  { id:'hail',       label:'Hail',                              type:'hazard', r: 9, fx:0.74, fy:0.52 },
+  { id:'cold_wave',  label:'Cold Wave',                          type:'hazard', r: 9, fx:0.67, fy:0.43 },
+  { id:'landslide',  label:'Landslide',                          type:'hazard', r: 9, fx:0.76, fy:0.37 },
+  { id:'lightning',  label:'Lightning',                          type:'hazard', r: 8, fx:0.78, fy:0.58 },
+  { id:'earthquake', label:'Earthquake',                         type:'hazard', r: 9, fx:0.73, fy:0.64 },
+  { id:'heat_wave',  label:'Heat Wave',                          type:'hazard', r: 9, fx:0.67, fy:0.60 },
+  { id:'strong_wind',label:'Strong Wind',                        type:'hazard', r: 9, fx:0.77, fy:0.70 },
+  { id:'ice_storm',  label:'Ice Storm',                          type:'hazard', r: 8, fx:0.65, fy:0.72 },
+  { id:'winter',     label:'Winter Weather',                     type:'hazard', r: 9, fx:0.71, fy:0.72 },
+  { id:'tama',       label:'Tama County, IA',                    type:'county', r:10, fx:0.72, fy:0.24 },
+  { id:'dallas_tx',  label:'Dallas, Texas',                      type:'county', r:10, fx:0.59, fy:0.27 },
+  { id:'butte_ca',   label:'Butte County, CA',                   type:'county', r: 9, fx:0.48, fy:0.11 },
+  { id:'terrebonne', label:'Terrebonne, LA',                     type:'county', r: 9, fx:0.80, fy:0.27 },
+  { id:'plaquemines',label:'Plaquemines, LA',                    type:'county', r: 8, fx:0.87, fy:0.35 },
+];
+
+const NAMED_EDGES = [
+  ['fema_nri','wildfire'],['fema_nri','hurricane'],['fema_nri','flood'],
+  ['fema_nri','drought'],['fema_nri','tornado'],['fema_nri','hail'],
+  ['fema_nri','cold_wave'],['fema_nri','landslide'],['fema_nri','lightning'],
+  ['fema_nri','earthquake'],['fema_nri','heat_wave'],['fema_nri','strong_wind'],
+  ['fema_nri','ice_storm'],['fema_nri','winter'],
+  ['cdc_svi','econ'],['cdc_svi','resilience'],['cdc_svi','svi_idx'],
+  ['cdc_svi','svi_pov'],['cdc_svi','health_out'],
+  ['cdc_places','health_out'],['census','svi_pov'],['census','econ_lvl'],
+  ['econ','econ_lvl'],['econ','nh_risk'],
+  ['fema_decl','hurricane'],['fema_decl','flood'],['fema_decl','wildfire'],
+  ['svi_idx','resilience'],['nh_risk','fema_nri'],
+  ['tama','winter'],['tama','flood'],['tama','fema_nri'],['tama','drought'],
+  ['tama','cold_wave'],['tama','tornado'],['tama','landslide'],['tama','lightning'],
+  ['tama','earthquake'],['tama','heat_wave'],['tama','strong_wind'],
+  ['tama','health_out'],['tama','hurricane'],['tama','ice_storm'],
+  ['tama','fema_decl'],['tama','wildfire'],['tama','hail'],
+  ['dallas_tx','fema_nri'],['dallas_tx','cdc_svi'],['dallas_tx','health_out'],
+  ['dallas_tx','tornado'],['dallas_tx','flood'],['dallas_tx','heat_wave'],['dallas_tx','fema_decl'],
+  ['butte_ca','wildfire'],['butte_ca','health_out'],['butte_ca','fema_decl'],
+  ['terrebonne','hurricane'],['terrebonne','flood'],['terrebonne','fema_decl'],
+  ['plaquemines','hurricane'],['plaquemines','flood'],
+];
+
+// Generate background noise
+const BG_NODES = [];
+const rnd = n => { let x = Math.sin(n*9301+49297)*233280; return x-Math.floor(x); };
+for (let i=0; i<300; i++) BG_NODES.push({ x:rnd(i*3), y:rnd(i*3+1), r:rnd(i*3+2)*3+1 });
+
+let nodes = [], edges = [], activeFilter = 'all', selected = -1, hovered = -1;
+let pan = {x:0,y:0}, zoom = 1, dragging = false, dragStart = null, panStart = null;
+
+function initGraph() {
+  nodes = NAMED_NODES.map(n => ({ ...n, px: n.fx, py: n.fy, vx:0, vy:0 }));
+  edges = NAMED_EDGES.map(([a,b]) => ({ a:nodes.findIndex(n=>n.id===a), b:nodes.findIndex(n=>n.id===b) })).filter(e=>e.a>=0&&e.b>=0);
+}
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.gctrl').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  selected = -1;
+  document.getElementById('node-panel').style.display = 'none';
+  draw();
+}
+
+function nodeVisible(n) {
+  if (activeFilter==='all') return true;
+  if (activeFilter==='county') return n.type==='county';
+  if (activeFilter==='hazard') return n.type==='hazard';
+  if (activeFilter==='index') return n.type==='index'||n.type==='event';
+  return true;
+}
+
+function toScreen(wx, wy) { return { x: wx*canvas.width*zoom + pan.x, y: wy*canvas.height*zoom + pan.y }; }
+function toWorld(sx, sy) { return { x:(sx-pan.x)/(canvas.width*zoom), y:(sy-pan.y)/(canvas.height*zoom) }; }
+
+function hitTest(sx, sy) {
+  const w = toWorld(sx, sy);
+  for (let i=nodes.length-1; i>=0; i--) {
+    if (!nodeVisible(nodes[i])) continue;
+    const n = nodes[i];
+    const dx = n.px-w.x, dy = n.py-w.y;
+    const scale = canvas.width;
+    if (dx*dx*scale*scale + dy*dy*scale*scale < (n.r+4)*(n.r+4)) return i;
+  }
+  return -1;
+}
+
+function showNodePanel(idx) {
+  if (idx<0) { document.getElementById('node-panel').style.display='none'; selected=-1; draw(); return; }
+  selected = idx;
+  const n = nodes[idx];
+  const deg = edges.filter(e=>e.a===idx||e.b===idx).length;
+  const nbs = edges.filter(e=>e.a===idx||e.b===idx).map(e=>e.a===idx?nodes[e.b]:nodes[e.a]).slice(0,8);
+  document.getElementById('np-name').textContent = n.label;
+  document.getElementById('np-type').textContent = n.type.toUpperCase();
+  document.getElementById('np-degree').textContent = deg;
+  document.getElementById('np-cat').textContent = n.type;
+  document.getElementById('np-neighbors').innerHTML = nbs.map(nb=>`<span class="nb-chip">${nb.label.length>18?nb.label.slice(0,16)+'…':nb.label}</span>`).join('');
+  document.getElementById('node-panel').style.display = 'block';
+  draw();
+}
+
+function draw() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#0d0d0d';
+  ctx.fillRect(0,0,W,H);
+
+  // BG noise
+  for (const b of BG_NODES) {
+    const s = toScreen(b.x, b.y);
+    ctx.beginPath(); ctx.arc(s.x, s.y, b.r*zoom, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.03)'; ctx.fill();
+  }
+
+  const hasSel = selected >= 0;
+
+  // Edges
+  for (const e of edges) {
+    const na = nodes[e.a], nb = nodes[e.b];
+    if (!nodeVisible(na)||!nodeVisible(nb)) continue;
+    const sa = toScreen(na.px, na.py), sb = toScreen(nb.px, nb.py);
+    const connected = hasSel && (e.a===selected||e.b===selected);
+    ctx.beginPath(); ctx.moveTo(sa.x,sa.y); ctx.lineTo(sb.x,sb.y);
+    ctx.strokeStyle = connected ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.055)';
+    ctx.lineWidth = connected ? 1.5 : 0.5;
+    ctx.stroke();
+  }
+
+  // Nodes
+  for (let i=0; i<nodes.length; i++) {
+    const n = nodes[i];
+    if (!nodeVisible(n)) continue;
+    const s = toScreen(n.px, n.py);
+    const r = n.r * zoom;
+    const isSel = selected===i, isHov = hovered===i;
+    const isConn = hasSel && edges.some(e=>(e.a===selected&&e.b===i)||(e.b===selected&&e.a===i));
+    const dimmed = hasSel && !isSel && !isConn;
+    const color = CMAP[n.type]||'#555';
+
+    ctx.beginPath(); ctx.arc(s.x,s.y,r,0,Math.PI*2);
+    ctx.globalAlpha = dimmed ? 0.2 : (isHov||isSel ? 1 : 0.85);
+    ctx.fillStyle = color; ctx.fill();
+    if (isSel) { ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke(); }
+    ctx.globalAlpha = 1;
+
+    if ((n.r>=12||isSel||isHov||isConn)&&!dimmed) {
+      const label = n.label.length>26 ? n.label.slice(0,24)+'…' : n.label;
+      const fs = Math.max(9, Math.min(12, 10*zoom));
+      ctx.font = `${isSel?600:400} ${fs}px 'Source Sans Pro',sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = dimmed ? 'rgba(120,120,120,0.4)' : '#e0e0e0';
+      ctx.fillText(label, s.x, s.y + r + Math.max(8, 10*zoom));
+    }
+  }
+}
+
+// Mouse
+canvas.addEventListener('mousedown', e => {
+  dragging = true;
+  dragStart = {x:e.offsetX, y:e.offsetY};
+  panStart = {x:pan.x, y:pan.y};
+});
+canvas.addEventListener('mousemove', e => {
+  if (dragging) {
+    pan.x = panStart.x + (e.offsetX-dragStart.x);
+    pan.y = panStart.y + (e.offsetY-dragStart.y);
+  }
+  hovered = hitTest(e.offsetX, e.offsetY);
+  canvas.style.cursor = hovered>=0 ? 'pointer' : (dragging?'grabbing':'grab');
+  draw();
+});
+canvas.addEventListener('mouseup', e => {
+  const dx=Math.abs(e.offsetX-dragStart.x), dy=Math.abs(e.offsetY-dragStart.y);
+  if (dx+dy<5) {
+    const idx = hitTest(e.offsetX, e.offsetY);
+    showNodePanel(idx);
+  }
+  dragging = false;
+});
+canvas.addEventListener('mouseleave', () => { dragging=false; hovered=-1; draw(); });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const f = e.deltaY<0?1.1:0.91;
+  pan.x = e.offsetX-(e.offsetX-pan.x)*f;
+  pan.y = e.offsetY-(e.offsetY-pan.y)*f;
+  zoom = Math.max(0.25,Math.min(5,zoom*f));
+  draw();
+},{passive:false});
+
+// Touch
+let _t=null;
+canvas.addEventListener('touchstart',e=>{_t={x:e.touches[0].clientX,y:e.touches[0].clientY,px:pan.x,py:pan.y};},{passive:true});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  if(!_t)return;
+  pan.x=_t.px+(e.touches[0].clientX-_t.x);
+  pan.y=_t.py+(e.touches[0].clientY-_t.y);
+  draw();
+},{passive:false});
+
+initGraph();
+toggleStack(0, document.querySelector('.stack-header'));
+draw();
+</script>
+</body>
+</html>
