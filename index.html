@@ -28,7 +28,7 @@
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: var(--font-body); background: var(--arc-cream); color: var(--arc-gray-900); line-height: 1.5; }
+body { font-family: var(--font-body); background: #0d0d0d; color: #ffffff; line-height: 1.5; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--arc-cream); }
@@ -39,26 +39,26 @@ body { font-family: var(--font-body); background: var(--arc-cream); color: var(-
 
 /* ── HEADER ── */
 header {
-  background: var(--arc-white);
-  border-bottom: 3px solid var(--arc-black);
+  background: #0d0d0d;
+  border-bottom: 1px solid #2a2a2a;
   padding: 28px 0 20px;
   position: sticky; top: 0; z-index: 100;
 }
 .header-inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .header-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .brand-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--arc-red); }
-h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color: var(--arc-black); line-height: 1.2; }
-.subtitle { font-size: 15px; color: var(--arc-gray-500); font-weight: 300; margin-top: 4px; }
+h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color: #ffffff; line-height: 1.2; }
+.subtitle { font-size: 15px; color: #aaaaaa; font-weight: 300; margin-top: 4px; }
 .header-stats { display: flex; gap: 28px; align-items: flex-end; flex-shrink: 0; }
 .hstat { text-align: right; }
-.hstat-val { font-family: var(--font-data); font-size: 22px; font-weight: 500; color: var(--arc-black); }
+.hstat-val { font-family: var(--font-data); font-size: 22px; font-weight: 500; color: #ffffff; }
 .hstat-val.red { color: var(--arc-red); }
-.hstat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--arc-gray-500); }
+.hstat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888888; }
 
 /* ── NAV TABS ── */
 .tab-nav {
-  background: var(--arc-white);
-  border-bottom: 1px solid var(--arc-gray-100);
+  background: #0d0d0d;
+  border-bottom: 1px solid #2a2a2a;
   position: sticky; top: 97px; z-index: 99;
 }
 .tab-nav-inner { display: flex; gap: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -67,15 +67,15 @@ h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color
   font-family: var(--font-body); font-size: 13px; font-weight: 600;
   padding: 12px 22px; background: none; border: none;
   border-bottom: 3px solid transparent; cursor: pointer;
-  color: var(--arc-gray-500); white-space: nowrap;
+  color: #666666; white-space: nowrap;
   transition: color .15s, border-color .15s;
-  margin-bottom: -1px;
+  margin-bottom: 0;
 }
-.tab-btn:hover { color: var(--arc-gray-900); }
-.tab-btn.active { color: var(--arc-black); border-bottom-color: var(--arc-black); }
+.tab-btn:hover { color: #cccccc; }
+.tab-btn.active { color: #ffffff; border-bottom: 3px solid #ED1B2E; }
 
 /* ── PANELS ── */
-.panel { display: none; padding: 36px 0 48px; }
+.panel { display: none; padding: 36px 0 48px; background: #0d0d0d; }
 .panel.active { display: block; }
 
 /* ── GRAPH PANEL ── */
@@ -130,65 +130,65 @@ h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color
 .nb-chip { font-size: 10px; padding: 2px 8px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #777; font-family: var(--font-data); white-space: nowrap; }
 
 /* ── WHAT / HOW / QUERY / USES ── */
-h2 { font-family: var(--font-headline); font-size: 21px; font-weight: 700; color: var(--arc-black); margin-bottom: 10px; }
-h3 { font-family: var(--font-headline); font-size: 15px; font-weight: 700; color: var(--arc-black); }
+h2 { font-family: var(--font-headline); font-size: 21px; font-weight: 700; color: #ffffff; margin-bottom: 10px; }
+h3 { font-family: var(--font-headline); font-size: 15px; font-weight: 700; color: #ffffff; }
 
 .arch { display: grid; gap: 12px; margin: 24px 0; }
 .arch-row { display: flex; gap: 12px; }
-.arch-box { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 16px 20px; flex: 1; }
+.arch-box { background: #1a1a1a; border: 1px solid #2a2a2a; padding: 16px 20px; flex: 1; }
 .arch-box.highlight { border-left: 3px solid var(--arc-red); }
-.arch-box.dark { background: var(--arc-black); color: var(--arc-white); }
+.arch-box.dark { background: #111111; color: #ffffff; }
 .arch-box.dark h3 { color: var(--arc-white); }
 .arch-box.dark p { color: var(--arc-gray-500); }
-.box-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--arc-gray-300); margin-bottom: 6px; }
+.box-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #555555; margin-bottom: 6px; }
 .arch-box.dark .box-tag { color: #444; }
-.arch-box p { font-size: 13px; color: var(--arc-gray-700); margin-top: 4px; line-height: 1.5; }
-.arrow-down { text-align: center; font-size: 16px; color: var(--arc-gray-300); }
+.arch-box p { font-size: 13px; color: #cccccc; margin-top: 4px; line-height: 1.5; }
+.arrow-down { text-align: center; font-size: 16px; color: #444444; }
 
 .stack { margin: 24px 0; }
-.stack-item { border: 1px solid var(--arc-gray-100); background: var(--arc-white); }
+.stack-item { border: 1px solid #2a2a2a; background: #1a1a1a; }
 .stack-item + .stack-item { border-top: none; }
 .stack-header {
   display: flex; align-items: center; gap: 16px;
-  padding: 14px 20px; cursor: pointer; transition: background .15s;
+  padding: 14px 20px; cursor: pointer; transition: background .15s; background: #1a1a1a;
 }
-.stack-header:hover { background: #fafaf9; }
-.stack-header.open { border-left: 3px solid var(--arc-red); padding-left: 17px; }
+.stack-header:hover { background: #222222; }
+.stack-header.open { border-left: 3px solid #ED1B2E; padding-left: 17px; background: #222222; }
 .stack-num { font-family: var(--font-data); font-size: 13px; color: var(--arc-red); min-width: 22px; }
-.stack-name { font-weight: 600; font-size: 14px; }
-.stack-sub { font-size: 12px; color: var(--arc-gray-500); margin-top: 2px; }
-.stack-body { display: none; padding: 14px 20px 18px 58px; background: var(--arc-cream); border-top: 1px solid var(--arc-gray-100); }
+.stack-name { font-weight: 600; font-size: 14px; color: #ffffff; }
+.stack-sub { font-size: 12px; color: #888888; margin-top: 2px; }
+.stack-body { display: none; padding: 14px 20px 18px 58px; background: #111111; border-top: 1px solid #2a2a2a; }
 .stack-body.open { display: block; }
-.stack-body p { font-size: 13px; color: var(--arc-gray-700); line-height: 1.65; }
-.stack-body code { font-family: var(--font-data); font-size: 11px; background: var(--arc-white); padding: 2px 6px; border: 1px solid var(--arc-gray-100); }
+.stack-body p { font-size: 13px; color: #ffffff; line-height: 1.65; }
+.stack-body code { font-family: var(--font-data); font-size: 11px; background: #0d0d0d; padding: 2px 6px; border: 1px solid #333333; color: #ffffff; }
 
-.query-box { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 22px; margin: 24px 0; }
+.query-box { background: #1a1a1a; border: 1px solid #2a2a2a; padding: 22px; margin: 24px 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .chip {
   font-family: var(--font-body); font-size: 12px; padding: 6px 14px;
-  border: 1px solid var(--arc-gray-300); background: none; cursor: pointer;
-  border-radius: 20px; color: var(--arc-gray-700); transition: all .15s;
+  border: 1px solid #444444; background: #111111; cursor: pointer;
+  border-radius: 20px; color: #cccccc; transition: all .15s;
 }
-.chip:hover { border-color: var(--arc-black); color: var(--arc-black); }
-.chip.on { background: var(--arc-black); color: var(--arc-white); border-color: var(--arc-black); }
-.result-wrap { border-top: 1px solid var(--arc-gray-100); padding-top: 18px; min-height: 130px; }
-.result-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--arc-gray-500); margin-bottom: 10px; }
-.result-text { font-size: 14px; color: var(--arc-gray-900); line-height: 1.7; }
+.chip:hover { border-color: #ffffff; color: #ffffff; }
+.chip.on { background: #ffffff; color: #0d0d0d; border-color: #ffffff; }
+.result-wrap { border-top: 1px solid #2a2a2a; padding-top: 18px; min-height: 130px; }
+.result-tag { font-family: var(--font-data); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #666666; margin-bottom: 10px; }
+.result-text { font-size: 14px; color: #ffffff; line-height: 1.7; }
 .result-text strong { color: var(--arc-red); font-weight: 600; }
 .result-sources { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
-.src-tag { font-family: var(--font-data); font-size: 10px; padding: 3px 8px; background: var(--arc-cream); border: 1px solid var(--arc-gray-100); color: var(--arc-gray-500); }
+.src-tag { font-family: var(--font-data); font-size: 10px; padding: 3px 8px; background: #111111; border: 1px solid #333333; color: #888888; }
 
 .use-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; }
-.use-card { background: var(--arc-white); border: 1px solid var(--arc-gray-100); padding: 18px; }
-.use-card:hover { border-color: var(--arc-gray-300); }
+.use-card { background: #1a1a1a; border: 1px solid #2a2a2a; padding: 18px; }
+.use-card:hover { border-color: #555555; }
 .use-icon { font-size: 18px; margin-bottom: 8px; }
 .use-card h3 { font-size: 14px; margin-bottom: 5px; }
-.use-card p { font-size: 12px; color: var(--arc-gray-700); line-height: 1.5; }
+.use-card p { font-size: 12px; color: #cccccc; line-height: 1.5; }
 
 /* ── FOOTER ── */
-footer { background: var(--arc-white); border-top: 3px solid var(--arc-black); padding: 20px 0; }
-footer p { font-size: 11px; color: var(--arc-gray-500); }
-footer a { color: var(--arc-info); text-decoration: none; }
+footer { background: #0d0d0d; border-top: 1px solid #2a2a2a; padding: 20px 0; }
+footer p { font-size: 11px; color: #666666; }
+footer a { color: #4a90d9; text-decoration: none; }
 
 @media (max-width: 640px) {
   h1 { font-size: 22px; }
@@ -248,8 +248,10 @@ footer a { color: var(--arc-info); text-decoration: none; }
 
   /* Tabs */
   .tab-nav { background: #0d0d0d; border-bottom: 1px solid #2a2a2a; }
-  .tab-btn { color: #ffffff; }
-  .tab-btn.active { color: #ffffff; border-bottom-color: #ED1B2E; }
+  .tab-btn { color: #666; border-bottom: 3px solid transparent; background: none; }
+  .tab-btn.active { color: #ffffff; border-bottom: 3px solid #ED1B2E; background: none; }
+  .tab-btn:hover { color: #cccccc; background: none; }
+  #what-is-btn { background: transparent; border: 1px solid #ED1B2E; color: #ED1B2E; }
 
   /* All panels */
   .panel { background: #0d0d0d; }
@@ -376,7 +378,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
   <div class="container">
     <div class="red-rule"></div>
     <h2>A knowledge graph of every US county — queryable with plain English</h2>
-    <p style="font-size:15px;color:var(--arc-gray-700);max-width:680px;line-height:1.7;margin:12px 0 28px;">
+    <p style="font-size:15px;color:#cccccc;max-width:680px;line-height:1.7;margin:12px 0 28px;">
       Every US county has been encoded into a graph database connecting hazard risks, social vulnerability, economic hardship, health outcomes, and disaster declaration history. Instead of searching spreadsheets, you ask a question and get a synthesized answer grounded in that data.
     </p>
 
@@ -411,11 +413,11 @@ footer a { color: var(--arc-info); text-decoration: none; }
       </div>
     </div>
 
-    <p style="font-size:12px;color:var(--arc-gray-500);">
+    <p style="font-size:12px;color:#888888;">
       The Knowledge Graph tab is a live visualization of the graph structure. Each node is an entity. Each edge is a relationship. Click any node to explore its connections.
     </p>
     <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">How It Works →</button>
+      <button onclick="showTab('how',document.querySelectorAll('.tab-btn')[2])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">How It Works →</button>
     </div>
   </div>
 </div>
@@ -479,7 +481,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
 
     </div>
     <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('query',document.querySelectorAll('.tab-btn')[3])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">Query Examples →</button>
+      <button onclick="showTab('query',document.querySelectorAll('.tab-btn')[3])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">Query Examples →</button>
     </div>
   </div>
 </div>
@@ -489,7 +491,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
   <div class="container">
     <div class="red-rule"></div>
     <h2 style="margin-bottom:8px;">What you can actually ask</h2>
-    <p style="font-size:13px;color:var(--arc-gray-700);margin-bottom:20px;">Select a query type to see a representative answer grounded in the county graph.</p>
+    <p style="font-size:13px;color:#cccccc;margin-bottom:20px;">Select a query type to see a representative answer grounded in the county graph.</p>
 
     <div class="query-box">
       <div class="chips">
@@ -511,11 +513,11 @@ footer a { color: var(--arc-info); text-decoration: none; }
       </div>
     </div>
 
-    <p style="font-size:12px;color:var(--arc-gray-500);">
-      In the live platform at <strong>explorer.jbf.com</strong>, type these questions directly into the Retrieval tab. The API tab accepts programmatic queries from any application.
+    <p style="font-size:12px;color:#888888;">
+      These are illustrative examples, not live query results. Try it yourself at <strong style="color:#cccccc;">explorer.jbf.com</strong> — Retrieval tab.
     </p>
     <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('uses',document.querySelectorAll('.tab-btn')[4])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#1a1a1a;border:none;color:#fff;cursor:pointer;">Use Cases →</button>
+      <button onclick="showTab('uses',document.querySelectorAll('.tab-btn')[4])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:transparent;border:1px solid #ED1B2E;color:#ED1B2E;cursor:pointer;">Use Cases →</button>
     </div>
   </div>
 </div>
@@ -552,7 +554,7 @@ footer a { color: var(--arc-info); text-decoration: none; }
       </div>
     </div>
     <div style="margin-top:32px;text-align:right;">
-      <button onclick="showTab('graph',document.querySelectorAll('.tab-btn')[0])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;">Explore the Knowledge Graph →</button>
+      <button onclick="showTab('graph',document.querySelectorAll('.tab-btn')[0])" style="font-family:'Source Sans Pro',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;background:#ED1B2E;border:none;color:#ffffff;cursor:pointer;">Explore the Knowledge Graph →</button>
     </div>
   </div>
 </div>
@@ -911,5 +913,29 @@ canvas.addEventListener('wheel', stopCycle);
 startCycle();
 
 </script>
+
+<style>
+@media (max-width: 640px) {
+  div.tab-nav { background: #0d0d0d !important; border-bottom: 1px solid #2a2a2a !important; }
+  div.tab-nav-inner button {
+    background: none !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    color: #666 !important;
+    margin-bottom: 0 !important;
+  }
+  div.tab-nav-inner button.active {
+    background: none !important;
+    border: none !important;
+    border-bottom: 3px solid #ED1B2E !important;
+    color: #ffffff !important;
+  }
+  button#what-is-btn {
+    background: none !important;
+    border: 1px solid #ED1B2E !important;
+    color: #ED1B2E !important;
+  }
+}
+</style>
 </body>
 </html>
