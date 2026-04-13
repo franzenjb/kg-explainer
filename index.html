@@ -99,10 +99,14 @@ h1 { font-family: var(--font-headline); font-size: 28px; font-weight: 700; color
 /* What Is This button — top right corner of graph */
 #what-is-btn {
   position: absolute; top: 16px; right: 16px; z-index: 10;
-  font-family: var(--font-body); font-size: 13px; font-weight: 700;
-  padding: 10px 20px; background: var(--arc-red); border: none;
-  color: #fff; cursor: pointer; white-space: nowrap;
+  font-family: var(--font-body); font-size: 13px; font-weight: 600;
+  padding: 9px 18px; background: rgba(20,20,20,0.88);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #e0e0e0; cursor: pointer; white-space: nowrap;
+  backdrop-filter: blur(4px); letter-spacing: 0.3px;
+  transition: border-color .2s, color .2s;
 }
+#what-is-btn:hover { border-color: var(--arc-red); color: #fff; }
 /* Bottom bar */
 #graph-bottom {
   position: absolute; bottom: 0; left: 0; right: 0;
@@ -233,18 +237,69 @@ footer a { color: var(--arc-info); text-decoration: none; }
 }
 
 @media (max-width: 640px) {
-  body { background: #0d0d0d; }
+  /* ── FULL DARK THEME ── */
+  body { background: #0d0d0d; color: #ffffff; }
+
+  /* Header */
   header { background: #0d0d0d; border-bottom: 1px solid #2a2a2a; }
   h1 { color: #ffffff; font-size: 22px; }
-  .subtitle { color: #aaaaaa; }
+  .subtitle { color: #ffffff; }
+  .brand-label { color: #ED1B2E; }
+
+  /* Tabs */
   .tab-nav { background: #0d0d0d; border-bottom: 1px solid #2a2a2a; }
-  .tab-btn { color: #888888; }
+  .tab-btn { color: #ffffff; }
   .tab-btn.active { color: #ffffff; border-bottom-color: #ED1B2E; }
-  .tab-btn:hover { color: #cccccc; }
-  #nb-name { color: #ffffff; }
-  #nb-meta { color: #aaaaaa; }
-  .nb-chip { color: #cccccc; background: #1a1a1a; border-color: #333; }
+
+  /* All panels */
+  .panel { background: #0d0d0d; }
+  h2 { color: #ffffff; }
+  h3 { color: #ffffff; }
+  p { color: #ffffff; }
+
+  /* Architecture boxes */
+  .arch-box { background: #1a1a1a; border-color: #2a2a2a; }
+  .arch-box.dark { background: #111; border-color: #333; }
+  .arch-box h3 { color: #ffffff; }
+  .arch-box p { color: #ffffff; }
+  .box-tag { color: #555; }
+  .arrow-down { color: #444; }
+
+  /* Stack accordion */
+  .stack-item { border-color: #2a2a2a; }
+  .stack-header { background: #1a1a1a; }
+  .stack-header:hover { background: #1e1e1e; }
+  .stack-header.open { background: #1e1e1e; }
+  .stack-name { color: #ffffff; }
+  .stack-sub { color: #ffffff; }
+  .stack-body { background: #111; border-color: #2a2a2a; }
+  .stack-body p { color: #ffffff; }
+  .stack-body code { background: #0d0d0d; border-color: #333; color: #ffffff; }
+
+  /* Query box */
+  .query-box { background: #1a1a1a; border-color: #2a2a2a; }
+  .chip { color: #ffffff; border-color: #333; background: #111; }
+  .chip.on { background: #ffffff; color: #0d0d0d; border-color: #fff; }
+  .result-wrap { border-color: #2a2a2a; }
+  .result-tag { color: #555; }
+  .result-text { color: #ffffff; }
+  .result-text strong { color: #ED1B2E; }
+  .src-tag { background: #111; border-color: #2a2a2a; color: #ffffff; }
+
+  /* Use cards */
+  .use-card { background: #1a1a1a; border-color: #2a2a2a; }
+  .use-card h3 { color: #ffffff; }
+  .use-card p { color: #ffffff; }
+
+  /* Next buttons */
+  button[onclick*="showTab"] { background: #ED1B2E; color: #ffffff; }
+
+  /* Graph bottom bar */
   #graph-bottom { background: #0d0d0d; border-top: 1px solid #2a2a2a; }
+  #nb-name { color: #ffffff; }
+  #nb-meta { color: #ffffff; }
+  .nb-chip { color: #ffffff; background: #1a1a1a; border-color: #333; }
+  #graph-hint-inline { color: #333; }
 }
 </style>
 </head>
@@ -472,32 +527,26 @@ footer a { color: var(--arc-info); text-decoration: none; }
     <h2 style="margin-bottom:20px;">What this unlocks for disaster response</h2>
     <div class="use-grid">
       <div class="use-card">
-        <div class="use-icon">🗺️</div>
         <h3>Chapter boundary decisions</h3>
         <p>Compare reorganization scenarios by the aggregate risk and vulnerability profile of counties in each scenario. Data-driven, not politics-driven.</p>
       </div>
       <div class="use-card">
-        <div class="use-icon">📦</div>
         <h3>Pre-positioning resources</h3>
         <p>Identify counties with high compound risk entering storm season. Get a ranked list with reasoning, not just a map of dots.</p>
       </div>
       <div class="use-card">
-        <div class="use-icon">🔍</div>
         <h3>Gap analysis</h3>
         <p>Find counties with repeated major disaster declarations but no nearby chapter capacity. Surface blind spots before a disaster hits.</p>
       </div>
       <div class="use-card">
-        <div class="use-icon">🤝</div>
         <h3>Mutual aid planning</h3>
         <p>When disaster strikes, find neighboring counties with similar risk profiles that may be co-impacted — and which have capacity to send aid.</p>
       </div>
       <div class="use-card">
-        <div class="use-icon">📊</div>
         <h3>Leadership briefings</h3>
         <p>"Which counties in our region are most at risk this hurricane season?" — 30-second answer instead of a week of analyst work.</p>
       </div>
       <div class="use-card">
-        <div class="use-icon">🔗</div>
         <h3>Spatial RAG (next)</h3>
         <p>Connect this graph to ArcGIS maps. Click a county, ask a question, get an AI answer grounded in the graph — directly in the map interface.</p>
       </div>
@@ -579,8 +628,14 @@ const ctx = canvas.getContext('2d');
 const wrap = document.getElementById('graph-wrap');
 
 function resize() {
-  canvas.width = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
+  const dpr = window.devicePixelRatio || 1;
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resize();
 window.addEventListener('resize', () => { resize(); draw(); });
@@ -679,8 +734,8 @@ function nodeVisible(n) {
   return true;
 }
 
-function toScreen(wx, wy) { return { x: wx*canvas.width*zoom + pan.x, y: wy*canvas.height*zoom + pan.y }; }
-function toWorld(sx, sy) { return { x:(sx-pan.x)/(canvas.width*zoom), y:(sy-pan.y)/(canvas.height*zoom) }; }
+function toScreen(wx, wy) { return { x: wx*wrap.clientWidth*zoom + pan.x, y: wy*wrap.clientHeight*zoom + pan.y }; }
+function toWorld(sx, sy) { return { x:(sx-pan.x)/(wrap.clientWidth*zoom), y:(sy-pan.y)/(wrap.clientHeight*zoom) }; }
 
 function hitTest(sx, sy) {
   const w = toWorld(sx, sy);
@@ -688,7 +743,7 @@ function hitTest(sx, sy) {
     if (!nodeVisible(nodes[i])) continue;
     const n = nodes[i];
     const dx = n.px-w.x, dy = n.py-w.y;
-    const scale = canvas.width;
+    const scale = wrap.clientWidth;
     if (dx*dx*scale*scale + dy*dy*scale*scale < (n.r+4)*(n.r+4)) return i;
   }
   return -1;
@@ -708,7 +763,7 @@ function showNodePanel(idx) {
 }
 
 function draw() {
-  const W = canvas.width, H = canvas.height;
+  const W = wrap.clientWidth, H = wrap.clientHeight;
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle = '#0d0d0d';
   ctx.fillRect(0,0,W,H);
