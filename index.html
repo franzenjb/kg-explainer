@@ -196,9 +196,6 @@ footer a { color: #4a90d9; text-decoration: none; }
   .tab-btn { font-size: 11px; padding: 10px 8px; white-space: nowrap; }
   .tab-nav-inner { overflow-x: auto; }
   #graph-wrap { height: 65vh; min-height: 360px; }
-  #graph-controls-bar { gap: 4px; padding: 6px 10px; }
-  .gctrl { font-size: 9px; padding: 4px 8px; }
-  #graph-hint { display: none; }
   .use-grid { grid-template-columns: 1fr; }
   .arch-row { flex-direction: column; }
   .panel { padding: 24px 0 36px; }
@@ -215,14 +212,10 @@ footer a { color: #4a90d9; text-decoration: none; }
   header { position: relative; }
   .tab-nav { position: relative; top: auto; }
   #graph-wrap { height: 100svh; min-height: 300px; }
-  #graph-bottom { display: block; }
-  #graph-controls-bar { display: none; }
-  #node-bar { padding: 8px 12px; gap: 2px; }
-  #nb-name { font-size: 13px; }
-  #nb-meta { font-size: 10px; }
-  #nb-neighbors { gap: 3px; margin-top: 3px; }
-  .nb-chip { font-size: 9px; padding: 2px 6px; }
-  #what-is-btn { top: 8px; right: 8px; font-size: 12px; padding: 8px 14px; }
+  #graph-canvas { pointer-events: none; }
+  #graph-bottom { display: none !important; }
+  #graph-legend { display: none !important; }
+  #graph-mobile-cta { display: block !important; }
   footer { display: none; }
 }
 
@@ -241,7 +234,6 @@ footer a { color: #4a90d9; text-decoration: none; }
   .tab-btn { color: #666; border-bottom: 3px solid transparent; background: none; }
   .tab-btn.active { color: #ffffff; border-bottom: 3px solid #ED1B2E; background: none; }
   .tab-btn:hover { color: #cccccc; background: none; }
-  #what-is-btn { background: transparent; border: 1px solid #ED1B2E; color: #ED1B2E; }
 
   /* All panels */
   .panel { background: #0d0d0d; }
@@ -445,6 +437,7 @@ footer a { color: #4a90d9; text-decoration: none; }
 <div class="panel active" id="panel-graph">
   <div id="graph-wrap">
     <canvas id="graph-canvas"></canvas>
+    <button id="graph-mobile-cta" onclick="showTab('what',document.querySelectorAll('.tab-btn')[1])" style="display:none;position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:'Source Sans Pro',sans-serif;font-size:14px;font-weight:700;padding:14px 32px;background:#ED1B2E;border:none;color:#fff;cursor:pointer;z-index:10;white-space:nowrap;letter-spacing:0.5px;">What Is This? →</button>
     <div id="graph-bottom">
       <div id="graph-controls-bar">
         <div class="gctrl on" onclick="setFilter('all',this)">All</div>
@@ -1392,11 +1385,6 @@ startCycle();
     border: none !important;
     border-bottom: 3px solid #ED1B2E !important;
     color: #ffffff !important;
-  }
-  button#what-is-btn {
-    background: none !important;
-    border: 1px solid #ED1B2E !important;
-    color: #ED1B2E !important;
   }
 }
 </style>
