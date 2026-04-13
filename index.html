@@ -329,14 +329,15 @@ footer a { color: #4a90d9; text-decoration: none; }
   padding-top: 20px;
 }
 #intro-enter {
-  font-family: var(--font-body); font-size: 14px; font-weight: 700;
-  padding: 14px 32px; background: #ED1B2E; border: none;
-  color: #ffffff; cursor: pointer; width: 100%;
-  letter-spacing: 0.5px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 400;
+  padding: 12px 32px; background: transparent;
+  border: 1px solid #444; color: #888; cursor: pointer; width: 100%;
+  letter-spacing: 1px; text-transform: uppercase;
+  transition: border-color .2s, color .2s;
 }
-#intro-enter:hover { background: #c8121f; }
+#intro-enter:hover { border-color: #888; color: #ccc; }
 #intro-graph-wrap {
-  position: relative; width: 100%; height: 200px;
+  position: relative; width: 100%; height: 400px;
   margin: 28px 0 28px;
   overflow: hidden;
 }
@@ -366,7 +367,7 @@ footer a { color: #4a90d9; text-decoration: none; }
 @media (max-width: 640px) {
   #intro-box { padding: 28px 20px; }
   #intro-box .intro-headline { font-size: 20px; }
-  #intro-graph-wrap { height: 150px; }
+  #intro-graph-wrap { height: 260px; }
 }
 </style>
 </head>
@@ -1190,14 +1191,14 @@ startCycle();
   const ictx = ic.getContext('2d');
 
   const NODE_COLORS = [
-    '#ED1B2E','#ED1B2E','#ED1B2E',  // county — weighted red
-    '#1e6fa8','#2a8a6e','#7a5ea8',  // hazard types
-    '#c47a1e','#4a8a2e','#6e3a8a',  // indices
-    '#555577','#446655','#664444',  // misc
+    '#ED1B2E','#ED1B2E','#ED1B2E',
+    '#1e6fa8','#2a8a6e','#7a5ea8',
+    '#c47a1e','#4a8a2e','#6e3a8a',
+    '#555577','#446655','#664444',
   ];
 
   const NODE_COUNT = 90;
-  const EDGE_COUNT = 160;
+  const EDGE_COUNT = 180;
 
   let IW, IH;
   let inodes = [], iedges = [];
@@ -1225,64 +1226,113 @@ startCycle();
       });
     }
     iedges = [];
-    // Hub nodes — highly connected
-    const hubs = [0, 1, 2, 3, 4, 5];
-    for (let h of hubs) {
-      const degree = 8 + Math.floor(Math.random() * 10);
+    // Give every node at least 7 edges, up to 15
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const degree = 7 + Math.floor(Math.random() * 9); // 7–15
       for (let d = 0; d < degree; d++) {
-        const t = Math.floor(Math.random() * NODE_COUNT);
-        if (t !== h) iedges.push({ a: h, b: t });
+        let t = Math.floor(Math.random() * NODE_COUNT);
+        while (t === i) t = Math.floor(Math.random() * NODE_COUNT);
+        iedges.push({ a: i, b: t });
       }
     }
-    // Random edges for density
-    while (iedges.length < EDGE_COUNT) {
-      const a = Math.floor(Math.random() * NODE_COUNT);
-      const b = Math.floor(Math.random() * NODE_COUNT);
-      if (a !== b) iedges.push({ a, b });
+    buildEdgeMap();
+    pauseFrames = PAUSE_MIN;
+  }
+
+  // Active burst state: one node fires its edges, then pause, then another
+  let burstNode = -1;       // which node is currently firing
+  let burstFrame = 0;       // how far through the burst we are
+  const BURST_HOLD = 90;    // frames fully lit (~1.5s)
+  const BURST_FADE = 60;    // frames to fade out
+  const BURST_TOTAL = BURST_HOLD + BURST_FADE;
+  let pauseFrames = 0;      // frames of silence between bursts
+  const PAUSE_MIN = 80;
+  const PAUSE_MAX = 180;
+
+  // Map node index → all edges that touch it
+  let nodeEdgeMap = {};
+
+  function buildEdgeMap() {
+    nodeEdgeMap = {};
+    for (let i = 0; i < iedges.length; i++) {
+      const e = iedges[i];
+      if (!nodeEdgeMap[e.a]) nodeEdgeMap[e.a] = [];
+      if (!nodeEdgeMap[e.b]) nodeEdgeMap[e.b] = [];
+      nodeEdgeMap[e.a].push(i);
+      nodeEdgeMap[e.b].push(i);
     }
   }
 
-  function drawIntro(ts) {
+  function fireBurst() {
+    burstNode = Math.floor(Math.random() * NODE_COUNT);
+    burstFrame = 0;
+  }
+
+  function drawIntro() {
     ictx.clearRect(0, 0, IW, IH);
     ictx.fillStyle = '#111';
     ictx.fillRect(0, 0, IW, IH);
 
-    // Update positions
+    // Move nodes
     for (const n of inodes) {
       n.x += n.vx;
       n.y += n.vy;
       n.pulse += n.pulseSpeed;
-      // Wrap edges
       if (n.x < -20) n.x = IW + 20;
       if (n.x > IW + 20) n.x = -20;
       if (n.y < -20) n.y = IH + 20;
       if (n.y > IH + 20) n.y = -20;
     }
 
-    // Edges
-    for (const e of iedges) {
-      const a = inodes[e.a], b = inodes[e.b];
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      const alpha = Math.max(0, 0.12 - dist / 3000);
-      if (alpha < 0.005) continue;
+    // Advance burst state machine
+    if (burstNode >= 0) {
+      burstFrame++;
+      if (burstFrame > BURST_TOTAL) {
+        burstNode = -1;
+        pauseFrames = PAUSE_MIN + Math.floor(Math.random() * (PAUSE_MAX - PAUSE_MIN));
+      }
+    } else {
+      pauseFrames--;
+      if (pauseFrames <= 0) fireBurst();
+    }
+
+    // Compute burst alpha envelope
+    let burstAlpha = 0;
+    if (burstNode >= 0) {
+      if (burstFrame <= BURST_HOLD) {
+        // Ramp in over first 20 frames, then hold
+        burstAlpha = Math.min(1, burstFrame / 20);
+      } else {
+        // Fade out
+        burstAlpha = 1 - (burstFrame - BURST_HOLD) / BURST_FADE;
+      }
+    }
+
+    // Active edge indices for this burst
+    const activeEdges = burstNode >= 0 ? new Set(nodeEdgeMap[burstNode] || []) : new Set();
+
+    // Draw edges
+    for (let i = 0; i < iedges.length; i++) {
+      const e = iedges[i];
+      const na = inodes[e.a], nb = inodes[e.b];
+      const isActive = activeEdges.has(i);
+      const alpha = isActive ? 0.55 + 0.35 * burstAlpha : 0.04;
+      const lw = isActive && burstAlpha > 0.1 ? 1.2 : 0.4;
+
       ictx.beginPath();
-      ictx.moveTo(a.x, a.y);
-      ictx.lineTo(b.x, b.y);
+      ictx.moveTo(na.x, na.y);
+      ictx.lineTo(nb.x, nb.y);
       ictx.strokeStyle = `rgba(255,255,255,${alpha})`;
-      ictx.lineWidth = 0.5;
+      ictx.lineWidth = lw;
       ictx.stroke();
     }
 
-    // Nodes
+    // Draw nodes
     for (const n of inodes) {
       const glow = 0.7 + 0.3 * Math.sin(n.pulse);
-      // Outer glow ring on larger nodes
       if (n.r > 4) {
         ictx.beginPath();
         ictx.arc(n.x, n.y, n.r * 2.2, 0, Math.PI * 2);
-        ictx.fillStyle = n.color.replace(')', `,${0.08 * glow})`).replace('rgb', 'rgba').replace('#', 'rgba(').replace('rgba(ED1B2E', 'rgba(237,27,46');
-        // simpler approach:
         ictx.globalAlpha = 0.08 * glow;
         ictx.fillStyle = n.color;
         ictx.fill();
@@ -1304,7 +1354,6 @@ startCycle();
 
   window.addEventListener('resize', () => {
     resize();
-    // reposition nodes proportionally
     for (const n of inodes) {
       n.x = Math.random() * IW;
       n.y = Math.random() * IH;
