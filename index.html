@@ -1314,8 +1314,8 @@ startCycle();
       const e = iedges[i];
       const na = inodes[e.a], nb = inodes[e.b];
       const isActive = activeEdges.has(i);
-      const alpha = isActive ? 0.55 + 0.35 * burstAlpha : 0.04;
-      const lw = isActive && burstAlpha > 0.1 ? 1.2 : 0.4;
+      const alpha = isActive ? 0.75 + 0.22 * burstAlpha : 0.05;
+      const lw = isActive && burstAlpha > 0.1 ? 2.0 : 0.4;
 
       ictx.beginPath();
       ictx.moveTo(na.x, na.y);
